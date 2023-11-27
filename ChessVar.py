@@ -189,15 +189,16 @@ class ChessVar:
                     self._game_board[end_row][end_column] = 'P'
                     return True
             if row_result == 1 and column_result >= abs(1) and self._game_board[end_row][end_column].islower(): # capture
-                self._game_board[start_row][start_column] = '_'
-                self._game_board[end_row][end_column] = 'P'
-
+            
                 captured_piece = self._game_board[end_row][end_column]
                 self._black_dict[captured_piece] -= 1
-
                 if self._black_dict[captured_piece] == 0:
                     self.set_game_state('WHITE_WON')
+
+                self._game_board[start_row][start_column] = '_'
+                self._game_board[end_row][end_column] = 'P'
                 return True
+            
             if row_result == 1 and self._game_board[end_row][end_column] == '_':
                 self._game_board[start_row][start_column] = '_'
                 self._game_board[end_row][end_column] = 'P'
