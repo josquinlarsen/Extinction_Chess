@@ -8,12 +8,20 @@ class ChessVar:
 
     def __init__(self):
         self._game_state = 'UNFINISHED'  # 'UNFINISHED', 'WHITE_WON', 'BLACK_WON'
+        self._move_state = 'WHITE'  # 'BLACK'
         self._board_size = 8
-        self._game_board = []  # list?
+        self._game_board = [['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+                            ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+                            ['_', '_', '_', '_', '_', '_', '_', '_'],
+                            ['_', '_', '_', '_', '_', '_', '_', '_'],
+                            ['_', '_', '_', '_', '_', '_', '_', '_'],
+                            ['_', '_', '_', '_', '_', '_', '_', '_'],
+                            ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+                            ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]  # list?
+
         self._white_dict = {'K': 1, 'Q': 1, 'R': 2, 'B': 2, 'N': 2, 'P': 8}
         self._black_dict = {'k': 1, 'q': 1, 'r': 2, 'b': 2, 'n': 2, 'p': 8}
         self._algebra_dict = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
-        self._move_state = 'WHITE'  # 'BLACK'
         self._white_counter = 1
         self._black_counter = 1
         self._capture = 'NO'  # 'YES'
@@ -33,6 +41,10 @@ class ChessVar:
     def set_move_state(self, player:str):
         """update move state 'WHITE' or 'BLACK' """
         self._move_state = player
+
+    def update_game_board(self, new_board):
+        """update game board for next move"""
+        self._game_board = new_board
 
     def get_white_counter(self):
         """return number of white moves"""
@@ -58,76 +70,68 @@ class ChessVar:
         # decorator?
         letter_column = 0
         number_row = 0
-        for character in position:
-            letter = character.lower()
-            if position[0] not in self._algebra_dict:
-                return False
-            if letter_column < 0 or letter_column >= 8:
-                return False
-            else:
-                if letter in self._algebra_dict:
-                    letter_column += (self._algebra_dict[letter])
-                    number_row += (int(position[1])) - 1
+        if len(position) != 2:
+            letter_column = -1
+        check_alpha = position[0].isalpha()
+        if check_alpha is not True:
+            letter_column = -1
+        check_num = position[1].isdigit()
+        if check_num is not True:
+            letter_column = -1
+        if position[0] not in self._algebra_dict:
+            letter_column = -1
+        if letter_column < 0 or letter_column >= 8:
+            letter_column = -1
+        else:
+            if position[0] in self._algebra_dict:
+                letter_column += (self._algebra_dict[position[0]])
+                number_row += 8 - (int(position[1]))
 
         return letter_column, number_row
 
     def make_move(self, start_pos: str, end_pos: str):
         """return False if move is illegal, or game is already won"""
-        #self.make_board()
         if self._game_state != 'UNFINISHED':
             return False
-
         start_coord = self.convert_algebraic(start_pos)
         end_coord = self.convert_algebraic(end_pos)
         start_row, start_column = start_coord
         end_row, end_column = end_coord
 
-        if start_coord is False or end_coord is False:  # check out-of-bounds move (e.g. a9 or i1)
+        if -1 in start_coord or -1 in end_coord:  # check out-of-bounds move (e.g. a9 or i1)
             return False
 
+        board = self._game_board[start_column][start_row]
+
         if self._move_state == 'WHITE':
-            if 0 < start_row > 7 or 0 < start_column > 7:  # check out-of-bounds move (e.g. a9 or i1) not working for i
-                return False
-            if 0 < end_row > 7 or 0 < end_column > 7:
-                return False
-            if self._game_board[start_column][start_row] == '_':  # empty square
+            if board == '_':  # empty square
                 return False
             if self._game_board[start_column][start_row].islower() is True:  # trying to move black piece
                 return False
             # valid_move_white =
-            self.check_white_move(start_coord, end_coord)
-            #if valid_move_white is True:
+            valid_move_white = self.check_white_move(start_coord, end_coord)
+            if valid_move_white is False:
+                return False
             self.set_move_state('BLACK')
             self._white_counter += 1
-            return self._game_board
-
-            #return False
+            #self.print_board()
+            #self.update_game_board(self._game_board)
+            return True
 
         if self._move_state == 'BLACK':
-            if 0 < start_row > 7 or 0 < start_column > 7:  # check out-of-bounds move (e.g. a9 or i1) not working for i
-                return False
-            if 0 < end_row > 7 or 0 < end_column > 7:
-                return False
             if self._game_board[start_column][start_row].isupper() is True: # trying to move white piece
                 return False
-            self.check_black_move(start_coord, end_coord) # returning None need to return True or False ?
-            #if valid_move_black is True:
+            valid_move_black = self.check_black_move(start_coord, end_coord) # returning None need to return True or False ?
+            if valid_move_black is False:
+                return False
             self.set_move_state('WHITE')
             self._black_counter += 1
-            return self._game_board
-            #else:
-                #return False
+            #self.print_board()
+            #self.update_game_board(self._game_board)
+            return True
+            #self.make_board(self._game_board)
 
-    def make_board(self):
-        """ create board for display"""
-        board_size = self._board_size
-        for row in range(board_size):
-            board_row = []
-            for column in range(board_size):
-                board_row.append("_")
-            self._game_board.append(board_row)
-        self.set_white_pieces()
-        self.set_black_pieces()
+        #self.update_game_board(self._game_board)
 
     def print_board(self):
         """print nice board"""
@@ -137,52 +141,6 @@ class ChessVar:
                 printed_row += column
             print(printed_row)
 
-    def set_white_pieces(self):
-        """ sets white pieces to proper locations """
-        back_row = 0
-        back_column = 0
-        for number in range(self._board_size):
-            if self._game_board[back_row][back_column] == '_':
-                self._game_board[back_row][0] = 'R'
-                self._game_board[back_row][1] = 'N'
-                self._game_board[back_row][2] = 'B'
-                self._game_board[back_row][3] = 'Q'
-                self._game_board[back_row][4] = 'K'
-                self._game_board[back_row][5] = 'B'
-                self._game_board[back_row][7] = 'R'
-                self._game_board[back_row][6] = 'N'
-
-        # pawn
-        front_row = 1
-        front_column = 0
-        for number in range(self._board_size):
-            if self._game_board[front_row][front_column] == '_':
-                self._game_board[front_row][front_column] = 'P'
-                front_column += 1
-
-    def set_black_pieces(self):
-        """sets black pieces to proper locations"""
-        back_row = 7
-        back_column = 0
-        for number in range(self._board_size):
-            if self._game_board[back_row][back_column] == '_':
-                self._game_board[back_row][0] = 'r'
-                self._game_board[back_row][1] = 'n'
-                self._game_board[back_row][2] = 'b'
-                self._game_board[back_row][3] = 'q'
-                self._game_board[back_row][4] = 'k'
-                self._game_board[back_row][5] = 'b'
-                self._game_board[back_row][7] = 'r'
-                self._game_board[back_row][6] = 'n'
-
-        # pawn
-        front_row = 6
-        front_column = 0
-        for number in range(self._board_size):
-            if self._game_board[front_row][front_column] == '_':
-                self._game_board[front_row][front_column] = 'p'
-                front_column += 1
-
     def check_white_move(self, start_coord, end_coord):
         """check if white move is valid"""
         start_row, start_column = start_coord
@@ -190,8 +148,7 @@ class ChessVar:
         piece = self._game_board[start_column][start_row]
 
         if piece == 'P':
-            self.move_white_pawn(start_coord, end_coord)
-            return True
+            return self.move_white_pawn(start_coord, end_coord)
 
         if self._game_board[start_column][start_row] == 'N':
             pass
@@ -212,7 +169,8 @@ class ChessVar:
         piece = self._game_board[start_column][start_row]
 
         if piece == 'p':
-            self.move_black_pawn(start_coord, end_coord)
+            return self.move_black_pawn(start_coord, end_coord)
+
         if self._game_board[start_column][start_row] == 'n':
             pass
         if self._game_board[start_column][start_row] == 'b':
@@ -227,9 +185,9 @@ class ChessVar:
 
     #USE THESE INSTEAD OF MOVE?
 
-    def move_white_pawn(self, start_coord, end_coord):
+    def move_black_pawn(self, start_coord, end_coord): # not returning True or False
         """
-        checks if white pawn move is valid, if so moves the pawn if not, returns False
+        checks if black pawn move is valid, if so moves the pawn if not, returns False
         """
         # 'P'
         # start:  a2 - h2
@@ -243,36 +201,39 @@ class ChessVar:
         row_result = end_row - start_row
         column_result = end_column - start_column
 
-        if self._white_counter == 1:  # opening pawn move
+        if 0 <= column_result > 2:
+            return False
+
+        if self._black_counter == 1:  # opening pawn move
             if column_result == 2 and row_result != 0:
                 return False
             else:
-                if self._game_board[start_column + 1][start_row + 1] == '_':
+                if self._game_board[start_column + 1][start_row] == '_':
                     self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'P'
+                    self._game_board[end_column][end_row] = 'p'
                     return True
 
             if column_result == 1 and self._game_board[end_column][end_row] == '_':
                 self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'P'
+                self._game_board[end_column][end_row] = 'p'
                 return True
 
         if abs(row_result) == 1 and column_result == 1:
-            check_opponent = self._game_board[end_column][end_row].islower()  # capture
+            check_opponent = self._game_board[end_column][end_row].isupper()  # capture
             if check_opponent is True:
                 captured_piece = self._game_board[end_column][end_row]
-                self._black_dict[captured_piece] -= 1
-                if self._black_dict[captured_piece] == 0:
-                    self.set_game_state('WHITE_WON')
+                self._white_dict[captured_piece] -= 1
+                if self._white_dict[captured_piece] == 0:
+                    self.set_game_state('BLACK_WON')
 
                 self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'P'
+                self._game_board[end_column][end_row] = 'p'
 
                 return True
 
         if column_result == 1 and self._game_board[end_row][end_column] == '_':
             self._game_board[start_column][start_row] = '_'
-            self._game_board[end_column][end_row] = 'P'
+            self._game_board[end_column][end_row] = 'p'
             return True
         else:
             return False
@@ -324,7 +285,7 @@ class ChessVar:
         # TODO
         pass
 
-    def move_black_pawn(self, start_coord, end_coord):
+    def move_white_pawn(self, start_coord, end_coord):
         """
         checks if white pawn move is valid, if so moves the pawn if not, returns False
         """
@@ -340,37 +301,40 @@ class ChessVar:
         row_result = end_row - start_row
         column_result = end_column - start_column
 
-        if self._black_counter == 1:  # opening pawn move
+        if 1 >= column_result < -2:
+            return False
+
+        if self._white_counter == 1:  # opening pawn move
             if column_result == -2 and row_result != 0:
                 return False
             else:
-                if self._game_board[start_column - 1][start_row - 1] == '_':
+                if self._game_board[start_column - 1][start_row] == '_':
                     self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'p'
+                    self._game_board[end_column][end_row] = 'P'
                     return True
 
             if column_result == -1 and self._game_board[end_column][end_row] == '_':
                 self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'p'
+                self._game_board[end_column][end_row] = 'P'
                 return True
 
         if column_result == -1 and abs(row_result) == 1:
-            check_opponent = self._game_board[end_column][end_row].isupper()  # capture
+            check_opponent = self._game_board[end_column][end_row].islower()  # capture
             if check_opponent is True:
 
                 captured_piece = self._game_board[end_column][end_row]
-                self._white_dict[captured_piece] -= 1
-                if self._white_dict[captured_piece] == 0:
-                    self.set_game_state('BLACK_WON')
+                self._black_dict[captured_piece] -= 1
+                if self._black_dict[captured_piece] == 0:
+                    self.set_game_state('WHITE_WON')
 
                 self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'p'
+                self._game_board[end_column][end_row] = 'P'
 
                 return True
 
         if column_result == -1 and self._game_board[end_row][end_column] == '_':
             self._game_board[start_column][start_row] = '_'
-            self._game_board[end_column][end_row] = 'p'
+            self._game_board[end_column][end_row] = 'P'
             return True
         else:
             return False
@@ -422,15 +386,74 @@ class ChessVar:
         # TODO
         pass
 
+    def make_board(self): # probably won't use
+        """ create board for display"""
+        board_size = self._board_size
+        for row in range(board_size):
+            board_row = []
+            for column in range(board_size):
+                board_row.append("_")
+            self._game_board.append(board_row)
+        self.set_white_pieces()
+        self.set_black_pieces()
+        return self._game_board
+    def set_white_pieces(self): #probably won't use
+        """ sets white pieces to proper locations """
+        back_row = 0
+        back_column = 0
+        for number in range(self._board_size):
+            if self._game_board[back_row][back_column] == '_':
+                self._game_board[back_row][0] = 'R'
+                self._game_board[back_row][1] = 'N'
+                self._game_board[back_row][2] = 'B'
+                self._game_board[back_row][3] = 'Q'
+                self._game_board[back_row][4] = 'K'
+                self._game_board[back_row][5] = 'B'
+                self._game_board[back_row][7] = 'R'
+                self._game_board[back_row][6] = 'N'
+
+        # pawn
+        front_row = 1
+        front_column = 0
+        for number in range(self._board_size):
+            if self._game_board[front_row][front_column] == '_':
+                self._game_board[front_row][front_column] = 'P'
+                front_column += 1
+
+    def set_black_pieces(self): # probably won't use
+        """sets black pieces to proper locations"""
+        back_row = 7
+        back_column = 0
+        for number in range(self._board_size):
+            if self._game_board[back_row][back_column] == '_':
+                self._game_board[back_row][0] = 'r'
+                self._game_board[back_row][1] = 'n'
+                self._game_board[back_row][2] = 'b'
+                self._game_board[back_row][3] = 'q'
+                self._game_board[back_row][4] = 'k'
+                self._game_board[back_row][5] = 'b'
+                self._game_board[back_row][7] = 'r'
+                self._game_board[back_row][6] = 'n'
+
+        # pawn
+        front_row = 6
+        front_column = 0
+        for number in range(self._board_size):
+            if self._game_board[front_row][front_column] == '_':
+                self._game_board[front_row][front_column] = 'p'
+                front_column += 1
 def main():
     cv = ChessVar()
-    cv.make_board()
-
     #print(cv.convert_algebraic('b8'))
-    print(cv.make_move('e2', 'e4'))
-    print(cv.make_move('d7', 'd5'))
-    print(cv.make_move('e4', 'd5'))
-    cv.print_board()
+    print(cv.make_move('b2', 'b4'))
+
+    print(cv.make_move('g7', 'g6'))
+
+    print(cv.make_move('c2', 'c3'))
+
+    #print(cv.make_move('h7', 'h6'))
+    #cv.print_board()
+
     print(cv._black_dict, cv._white_dict)
 
 
