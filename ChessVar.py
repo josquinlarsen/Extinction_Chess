@@ -204,7 +204,7 @@ class ChessVar:
         if 0 <= column_result > 2:
             return False
 
-        if self._black_counter == 1:  # opening pawn move
+        if start_column == 1:  # opening pawn move
             if column_result == 2 and row_result != 0:
                 return False
             else:
@@ -304,7 +304,7 @@ class ChessVar:
         if 1 >= column_result < -2:
             return False
 
-        if self._white_counter == 1:  # opening pawn move
+        if start_column == 6:  # opening pawn move
             if column_result == -2 and row_result != 0:
                 return False
             else:
@@ -445,11 +445,11 @@ class ChessVar:
 def main():
     cv = ChessVar()
     #print(cv.convert_algebraic('b8'))
-    print(cv.make_move('b2', 'b4'))
+    print(cv.make_move('a2', 'a4'))
 
     print(cv.make_move('g7', 'g6'))
 
-    print(cv.make_move('c2', 'c3'))
+    print(cv.make_move('b2', 'b3'))
 
     #print(cv.make_move('h7', 'h6'))
     #cv.print_board()
