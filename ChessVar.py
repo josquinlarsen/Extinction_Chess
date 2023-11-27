@@ -56,18 +56,18 @@ class ChessVar:
         returns tuple for unpacking
         """
         # decorator?
-        row = 0
-        column = 0
+        letter_column = 0
+        number_row = 0
         for character in position:
             letter = character.lower()
-            if position[0] not in self._algebra_dict or column < 0 or column >= 8 :
+            if position[0] not in self._algebra_dict or letter_column < 0 or letter_column >= 8:
                 return False
             else:
                 if letter in self._algebra_dict:
-                    row += (self._algebra_dict[letter])
-                    column += (int(position[1])) - 1
+                    letter_column += (self._algebra_dict[letter])
+                    number_row += (int(position[1])) - 1
 
-        return row, column
+        return letter_column, number_row
 
     def make_move(self, start_pos: str, end_pos: str):
         """return False if move is illegal, or game is already won"""
@@ -84,29 +84,26 @@ class ChessVar:
             return False
 
         if self._move_state == 'WHITE':
-            if self._game_board[start_row][start_column] == '_':  # empty square
+            if self._game_board[start_column][start_row] == '_':  # empty square
                 return False
-            if self._game_board[start_row][start_column].islower() is True:  # trying to move black piece
+            if self._game_board[start_column][start_row].islower() is True:  # trying to move black piece
                 return False
             valid_move = (self.check_white_move(start_coord, end_coord))
             if valid_move is True:
                 self.set_move_state('BLACK')
                 self.inc_white_counter()
                 return self._game_board
-
-            #if self._game_board[end_row][end_column] != '_': # move to check_white_move
-                #return False
-            #if self._game_board[end_row][end_column].isupper() is True:
-                #return False
+            else:
+                return False
 
         if self._move_state == 'BLACK':
-            if self._game_board[start_row][start_column] == '_': # empty square
+            if self._game_board[start_column][start_row] == '_': # empty square
                 return False
-            if self._game_board[start_row][start_column].isupper() is True: # trying to move white piece
+            if self._game_board[start_column][start_row].isupper() is True: # trying to move white piece
                 return False
-            if self._game_board[end_row][end_column] != '_':
+            if self._game_board[end_column][end_row] != '_':
                 return False
-            if self._game_board[end_row][end_column].islower() is True:
+            if self._game_board[end_column][end_row].islower() is True:
                 return False
 
     def make_board(self):
@@ -119,7 +116,6 @@ class ChessVar:
             self._game_board.append(board_row)
         self.set_white_pieces()
         self.set_black_pieces()
-        self.print_board()
 
     def print_board(self):
         """print nice board"""
@@ -180,40 +176,50 @@ class ChessVar:
         start_row, start_column = start_coord
         end_row, end_column = end_coord
 
-        if self._game_board[start_row][start_column] == 'P':
+        if self._game_board[start_column][start_row] == 'P':
             row_result = end_row - start_row
             column_result = end_column - start_column
             if self._white_counter == 1: # opening pawn move
-                if column_result == 2 and self._game_board[start_row + 1][start_column] == '_':
-                    self._game_board[start_row][start_column] = '_'
-                    self._game_board[end_row][end_column] = 'P'
+                if column_result == 2 and row_result != 0:
+                    return False
+                else:
+                    if self._game_board[start_column + 1][start_row + 1] == '_':
+                        self._game_board[start_column][start_row] = '_'
+                        self._game_board[end_column][end_row] = 'P'
+                        return True
+
+                if column_result == 1 and self._game_board[end_column][end_row] == '_':
+                    self._game_board[start_column][start_row] = '_'
+                    self._game_board[end_column][end_row] = 'P'
                     return True
-            if row_result == 1 and column_result >= abs(1) and self._game_board[end_row][end_column].islower(): # capture
-            
-                captured_piece = self._game_board[end_row][end_column]
+
+            if column_result == 1 and row_result >= abs(1) and self._game_board[end_column][end_row].islower(): # capture
+
+                captured_piece = self._game_board[end_column][end_row]
                 self._black_dict[captured_piece] -= 1
                 if self._black_dict[captured_piece] == 0:
                     self.set_game_state('WHITE_WON')
 
-                self._game_board[start_row][start_column] = '_'
-                self._game_board[end_row][end_column] = 'P'
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'P'
+
                 return True
-            
-            if row_result == 1 and self._game_board[end_row][end_column] == '_':
-                self._game_board[start_row][start_column] = '_'
-                self._game_board[end_row][end_column] = 'P'
+
+            if column_result == 1 and self._game_board[end_row][end_column] == '_':
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'P'
                 return True
             else:
                 return False
-        if self._game_board[start_row][start_column] == 'N':
+        if self._game_board[start_column][start_row] == 'N':
             pass
-        if self._game_board[start_row][start_column] == 'B':
+        if self._game_board[start_column][start_row] == 'B':
             pass
-        if self._game_board[start_row][start_column] == 'R':
+        if self._game_board[start_column][start_row] == 'R':
             pass
-        if self._game_board[start_row][start_column] == 'Q':
+        if self._game_board[start_column][start_row] == 'Q':
             pass
-        if self._game_board[start_row][start_column] == 'K':
+        if self._game_board[start_column][start_row] == 'K':
             pass
 
 
@@ -221,17 +227,17 @@ class ChessVar:
         """check if black move is valid"""
         start_row, start_column = start_coord
         end_row, end_column = end_coord
-        if self._game_board[start_row][start_column] == 'p':
+        if self._game_board[start_column][start_row] == 'p':
             pass
-        if self._game_board[start_row][start_column] == 'n':
+        if self._game_board[start_column][start_row] == 'n':
             pass
-        if self._game_board[start_row][start_column] == 'b':
+        if self._game_board[start_column][start_row] == 'b':
             pass
-        if self._game_board[start_row][start_column] == 'r':
+        if self._game_board[start_column][start_row] == 'r':
             pass
-        if self._game_board[start_row][start_column] == 'q':
+        if self._game_board[start_column][start_row] == 'q':
             pass
-        if self._game_board[start_row][start_column] == 'k':
+        if self._game_board[start_column][start_row] == 'k':
             pass
 
 
@@ -355,7 +361,7 @@ def main():
     cv.make_board()
 
     #print(cv.convert_algebraic('b8'))
-    print(cv.make_move('b2', 'b4'))
+    print(cv.make_move('e2', 'e3'))
     cv.print_board()
 
 
