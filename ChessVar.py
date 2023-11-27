@@ -101,37 +101,35 @@ class ChessVar:
         if -1 in start_coord or -1 in end_coord:  # check out-of-bounds move (e.g. a9 or i1)
             return False
 
-        board = self._game_board[start_column][start_row]
+        square = self._game_board[start_column][start_row]
 
         if self._move_state == 'WHITE':
-            if board == '_':  # empty square
+            if square == '_':  # empty square
                 return False
-            if self._game_board[start_column][start_row].islower() is True:  # trying to move black piece
+            if square.islower() is True:  # trying to move black piece
                 return False
-            # valid_move_white =
+
             valid_move_white = self.check_white_move(start_coord, end_coord)
             if valid_move_white is False:
                 return False
             self.set_move_state('BLACK')
             self._white_counter += 1
-            #self.print_board()
-            #self.update_game_board(self._game_board)
+
             return True
 
         if self._move_state == 'BLACK':
-            if self._game_board[start_column][start_row].isupper() is True: # trying to move white piece
+            if square == '_':
+                return False
+            if square.isupper() is True: # trying to move white piece
                 return False
             valid_move_black = self.check_black_move(start_coord, end_coord) # returning None need to return True or False ?
             if valid_move_black is False:
                 return False
             self.set_move_state('WHITE')
             self._black_counter += 1
-            #self.print_board()
-            #self.update_game_board(self._game_board)
-            return True
-            #self.make_board(self._game_board)
 
-        #self.update_game_board(self._game_board)
+            return True
+
 
     def print_board(self):
         """print nice board"""
