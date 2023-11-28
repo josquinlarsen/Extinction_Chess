@@ -15,7 +15,7 @@ class ChessVar:
                             ['_', '_', '_', '_', 'k', '_', '_', '_'],
                             ['_', '_', '_', 'P', '_', '_', '_', '_'],
                             ['_', 'Q', '_', '_', '_', '_', '_', '_'],
-                            ['_', '_', '_', '_', '_', '_', '_', '_'],
+                            ['_', '_', '_', 'p', '_', '_', '_', '_'],
                             ['P', 'P', 'P', '_', 'K', '_', 'P', 'P'],
                             ['R', 'N', 'B', '_', '_', '_', 'N', 'R']]  # list?
 
@@ -157,8 +157,9 @@ class ChessVar:
             pass
         if self._game_board[start_column][start_row] == 'Q':
             pass
-        if self._game_board[start_column][start_row] == 'K':
-            pass
+
+        if piece == 'K':
+            return self.move_white_king(start_coord, end_coord)
 
 
     def check_black_move(self, start_coord, end_coord):
@@ -484,14 +485,56 @@ class ChessVar:
         # TODO
         pass
 
-    def move_white_king(self):
-        # 'k'
-        # start: e8
+    def move_white_king(self, start_coord, end_coord):
+        # 'K'
+        # start: e1
         # open: col +/-1; row - 1, col +/- 1 and row + 1
         # subsequent: col +/-1, row +/- 1, col +/- 1 and row +/- 1
         #       if not on edge
         # TODO
-        pass
+        start_row, start_column = start_coord
+        end_row, end_column = end_coord
+
+        row_result = end_row - start_row
+        column_result = end_column - start_column
+
+        if 0 >= end_column > 7 or 0 >= end_row > 7:
+            return False
+        
+        if 1 > column_result > 2:
+            return False
+        
+        if 1 > row_result > 2:
+            return False
+        
+        if self._game_board[end_column][end_row] == '_':            # up, down
+            if abs(column_result) == 1 and row_result == 0:
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'K'
+                return True
+            if column_result == 0 and abs(row_result) == 1:         # left, right
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'K'
+                return True
+            if abs(column_result) == 1 and abs(row_result) == 1:         # diagonal 
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'K'
+                return True
+            
+        check_opponent = self._game_board[end_column][end_row].islower()
+        if check_opponent is True:
+            captured_piece = self._game_board[end_column][end_row]
+            self._black_dict[captured_piece] -= 1
+            if self._black_dict[captured_piece] == 0:
+                self.set_game_state('WHITE_WON')
+
+            self._game_board[start_column][start_row] = '_'
+            self._game_board[end_column][end_row] = 'K'
+
+            return True
+        
+        else:
+            return False
 
     def make_board(self): # probably won't use
         """ create board for display"""
@@ -563,9 +606,9 @@ def main():
     
     cv = ChessVar()
     #print(cv.convert_algebraic('b8'))
-    print(cv.make_move('a2', 'a3'))
+    print(cv.make_move('e2', 'f1'))
 
-    print(cv.make_move('e6', 'd5'))
+    #print(cv.make_move('e6', 'd5'))
 
    # print(cv.make_move('g7', 'g6'))
 
