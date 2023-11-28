@@ -17,19 +17,17 @@ class ChessVar:
                             ['_', 'R', '_', '_', '_', '_', '_', '_'],
                             ['_', '_', '_', '_', '_', '_', '_', '_'],
                             ['_', '_', 'P', '_', 'K', '_', 'P', 'P'],
-                            ['r', 'N', 'B', 'q', '_', '_', '_', 'R']]  # list?
+                            ['r', 'N', 'B', 'q', '_', '_', '_', 'R']]  
 
         self._white_dict = {'K': 1, 'Q': 1, 'R': 2, 'B': 2, 'N': 2, 'P': 8}
         self._black_dict = {'k': 1, 'q': 1, 'r': 2, 'b': 2, 'n': 2, 'p': 8}
         self._algebra_dict = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
-        self._white_counter = 1
-        self._black_counter = 1
 
     def get_game_state(self):
         """return game state"""
         return self._game_state
 
-    def set_game_state(self, game_state):
+    def set_game_state(self, game_state: str):
         """set/update game state"""
         self._game_state = game_state
 
@@ -38,50 +36,38 @@ class ChessVar:
         return self._move_state
 
     def set_move_state(self, player:str):
-        """update move state 'WHITE' or 'BLACK' """
+        """update move state to 'WHITE' or 'BLACK' """
         self._move_state = player
-
-    def update_game_board(self, new_board):
-        """update game board for next move"""
-        self._game_board = new_board
-
-    def get_white_counter(self):
-        """return number of white moves"""
-        return self._white_counter
-
-    def inc_white_counter(self):
-        """increment white counter"""
-        return self._white_counter + 1
-
-    def get_black_counter(self):
-        """ return black move counter"""
-        return self._black_counter
-
-    def inc_black_counter(self):
-        """ increment black counter"""
-        return self._black_counter + 1
 
     def convert_algebraic(self, position: str):
         """
-        converts algebraic notation to 2d array coordinates,
-        returns tuple for unpacking
+        Method that takes a parameter of a string in algebraic notation (e.g. 'a7') and converts that 
+        to coordinates (0, 1). To align with a chess board the first coordinate refers to the columns 
+        A - H converted A = 0 to H = 7. Rows are in reverse order where '_1' = (_, 7) to '_8' = (_, 0)
+        if a letter or number is out of bounds method returns -1 otherwise  returns coordinates (0,1)
+        tuple for unpacking as 2d array coordinates
         """
-        # decorator?
         letter_column = 0
         number_row = 0
-        if len(position) != 2:
+
+        if len(position) != 2:                  # out-of-bounds tests
             letter_column = -1
+
         check_alpha = position[0].isalpha()
         if check_alpha is not True:
             letter_column = -1
+
         check_num = position[1].isdigit()
         if check_num is not True:
             letter_column = -1
+
         if position[0] not in self._algebra_dict:
             letter_column = -1
+
         if letter_column < 0 or letter_column >= 8:
             letter_column = -1
-        else:
+
+        else:                                   # valid algebraic notation for conversion
             if position[0] in self._algebra_dict:
                 letter_column += (self._algebra_dict[position[0]])
                 number_row += 8 - (int(position[1]))
@@ -89,18 +75,31 @@ class ChessVar:
         return letter_column, number_row
 
     def make_move(self, start_pos: str, end_pos: str):
-        """return False if move is illegal, or game is already won"""
-        if self._game_state != 'UNFINISHED':
-            return False
+        """
+        Method that takes two string parameters, starting and end positions in algebraic notation, 
+        checks the current game state ('UNFINISHED', 'WHITE_WON', 'BLACK_WON'), passes the algebraic notation for 
+        conversion, takes the returned tuple and unpacks that into 2d array notation (array[0][1] where [0] 
+        represents the letter column and [1] the row). If a position is out of bounds (-1), it returns False.
+
+        It then checks move state (either 'WHITE' or 'BLACK') and proceeds to test legal moves - 
+        returning False if a move is invalid. If a move is valid, the start and end coordinates are passed to the
+        check_white_move or check_black_move for further testing. 
+
+        If a move is valid, it returns True otherwise it returns False and the move state is not changed until a valid
+        move is chosen. 
+        """
         start_coord = self.convert_algebraic(start_pos)
         end_coord = self.convert_algebraic(end_pos)
         start_row, start_column = start_coord
         end_row, end_column = end_coord
 
-        if -1 in start_coord or -1 in end_coord:  # check out-of-bounds move (e.g. a9 or i1)
+        square = self._game_board[start_column][start_row]
+
+        if self._game_state != 'UNFINISHED':
             return False
 
-        square = self._game_board[start_column][start_row]
+        if -1 in start_coord or -1 in end_coord:  # check out-of-bounds move (e.g. a9 or i1)
+            return False
 
         if self._move_state == 'WHITE':
             if square == '_':  # empty square
@@ -111,26 +110,27 @@ class ChessVar:
             valid_move_white = self.check_white_move(start_coord, end_coord)
             if valid_move_white is False:
                 return False
+            
             self.set_move_state('BLACK')
-            self._white_counter += 1
-
+           
             return True
 
         if self._move_state == 'BLACK':
-            if square == '_':
+            if square == '_': # empty square
                 return False
             if square.isupper() is True: # trying to move white piece
                 return False
-            valid_move_black = self.check_black_move(start_coord, end_coord) # returning None need to return True or False ?
+            
+            valid_move_black = self.check_black_move(start_coord, end_coord) 
             if valid_move_black is False:
                 return False
+            
             self.set_move_state('WHITE')
-            self._black_counter += 1
 
             return True
 
     def print_board(self):
-        """print nice board"""
+        """prints board in a 8x8 configuration"""
         for row in self._game_board:
             printed_row = ""
             for column in row:
@@ -138,7 +138,13 @@ class ChessVar:
             print(printed_row)
 
     def check_white_move(self, start_coord, end_coord):
-        """check if white move is valid"""
+        """
+        Method which takes two parameters: the start and end coordinates converted in the make_move
+        method. It then checks which piece is at the start location and passes the coordinates to the
+        appropriate move_white_'PIECE' for further move validation. 
+
+        Returns True or False depending on the return value of the move_white_'PIECE' method.
+        """
         start_row, start_column = start_coord
         end_row, end_column = end_coord
         piece = self._game_board[start_column][start_row]
@@ -161,9 +167,14 @@ class ChessVar:
         if piece == 'K':
             return self.move_white_king(start_coord, end_coord)
 
-
     def check_black_move(self, start_coord, end_coord):
-        """check if black move is valid"""
+        """        
+        Method which takes two parameters: the start and end coordinates converted in the make_move
+        method. It then checks which piece is at the start location and passes the coordinates to the
+        appropriate move_black_'PIECE' for further move validation. 
+
+        Returns True or False depending on the return value of the move_black_'PIECE' method.
+        """
         start_row, start_column = start_coord
         end_row, end_column = end_coord
         piece = self._game_board[start_column][start_row]
@@ -186,16 +197,23 @@ class ChessVar:
         if piece == 'k':
             return self.move_black_king(start_coord, end_coord)
 
-    def move_black_pawn(self, start_coord, end_coord): # not returning True or False
+    def move_black_pawn(self, start_coord, end_coord):
         """
-        checks if black pawn move is valid if so moves the pawn and returns True, if not returns False
+        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
+        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'p'
+        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
+        If the piece captured is the only piece or only remaining piece, the game state is updated to 'BLACK_WON'
+        
+        Valid moves: - Destination square is empty '_'
+                     - From starting square, can move forward one or two squares if no piece is blocking the path 
+                     - Subsequent moves after first sqaure: can only move forward one square
+                     - Cannot move diagonally, unless capturing opponent piece
+                     - Cannot move backwards
+
+        Capture:     - Can only capture on the forward left or right diagonal from the starting square
+
+        If move is vaild, returns True otherwise returns False                     
         """
-        # 'p'
-        # start:  a7 - h7
-        # open: row +1 or +2
-        # subsequent: row +1
-        # capture: column +/- 1, row +1
-        # TODO
         start_row, start_column = start_coord
         end_row, end_column = end_coord
 
@@ -912,14 +930,22 @@ class ChessVar:
 
     def move_white_pawn(self, start_coord, end_coord):
         """
-        checks if white pawn move is valid, if so moves the pawn and returns True, if not, returns False
+        White Pawn: 'P'
+        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
+        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'P'
+        for white pawn. If a piece is captured, the opponent's dictionary is decremented by 1 for the corresponding piece.
+        If the piece captured is the only piece or only remaining piece, the game state is updated to 'WHITE_WON'
+        
+        Valid moves: - Destination square is empty '_'
+                     - From starting square, can move forward one or two squares if no piece is blocking the path 
+                     - Subsequent moves after first square: can only move forward one square
+                     - Cannot move diagonally, unless capturing opponent piece
+                     - Cannot move backwards
+
+        Capture:     - Can only capture on the forward left or right diagonal from the starting square
+
+        If move is vaild, returns True otherwise returns False
         """
-        # 'p'
-        # start:  a7 - h7
-        # open: row - 1 or - 2
-        # subsequent: row - 1
-        # capture: column +/- 1, row - 1
-        # TODO
         start_row, start_column = start_coord
         end_row, end_column = end_coord
 
@@ -1631,66 +1657,10 @@ class ChessVar:
         else:
             return False
 
-    def make_board(self): # probably won't use
-        """ create board for display"""
-        board_size = self._board_size
-        for row in range(board_size):
-            board_row = []
-            for column in range(board_size):
-                board_row.append("_")
-            self._game_board.append(board_row)
-        self.set_white_pieces()
-        self.set_black_pieces()
-        return self._game_board
-    
-    def set_white_pieces(self): #probably won't use
-        """ sets white pieces to proper locations """
-        back_row = 0
-        back_column = 0
-        for number in range(self._board_size):
-            if self._game_board[back_row][back_column] == '_':
-                self._game_board[back_row][0] = 'R'
-                self._game_board[back_row][1] = 'N'
-                self._game_board[back_row][2] = 'B'
-                self._game_board[back_row][3] = 'Q'
-                self._game_board[back_row][4] = 'K'
-                self._game_board[back_row][5] = 'B'
-                self._game_board[back_row][7] = 'R'
-                self._game_board[back_row][6] = 'N'
 
-        # pawn
-        front_row = 1
-        front_column = 0
-        for number in range(self._board_size):
-            if self._game_board[front_row][front_column] == '_':
-                self._game_board[front_row][front_column] = 'P'
-                front_column += 1
-
-    def set_black_pieces(self): # probably won't use
-        """sets black pieces to proper locations"""
-        back_row = 7
-        back_column = 0
-        for number in range(self._board_size):
-            if self._game_board[back_row][back_column] == '_':
-                self._game_board[back_row][0] = 'r'
-                self._game_board[back_row][1] = 'n'
-                self._game_board[back_row][2] = 'b'
-                self._game_board[back_row][3] = 'q'
-                self._game_board[back_row][4] = 'k'
-                self._game_board[back_row][5] = 'b'
-                self._game_board[back_row][7] = 'r'
-                self._game_board[back_row][6] = 'n'
-
-        # pawn
-        front_row = 6
-        front_column = 0
-        for number in range(self._board_size):
-            if self._game_board[front_row][front_column] == '_':
-                self._game_board[front_row][front_column] = 'p'
-                front_column += 1
 def main():
 
-    intial_board =[
+    initial_board =[
         ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
         ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
         ['_', '_', '_', '_', '_', '_', '_', '_'],
@@ -1702,7 +1672,7 @@ def main():
     
     cv = ChessVar()
     #print(cv.convert_algebraic('b8'))
-    print(cv.make_move('d5', 'h1'))
+    print(cv.make_move('g2', 'g4'))
     print(cv.get_game_state())
 
     #print(cv.make_move('d5', 'd5'))
