@@ -10,14 +10,14 @@ class ChessVar:
         self._game_state = 'UNFINISHED'  # 'UNFINISHED', 'WHITE_WON', 'BLACK_WON'
         self._move_state = 'WHITE'  # 'BLACK'
         self._board_size = 8
-        self._game_board = [['r', 'n', 'b', 'q', '_', 'b', 'n', 'r'],
-                            ['p', 'p', 'p', '_', '_', '_', 'p', 'p'],
+        self._game_board = [['_', 'n', 'b', 'q', '_', 'b', 'n', '_'],
+                            ['_', 'p', 'p', '_', '_', '_', 'p', 'p'],
                             ['_', '_', '_', '_', 'k', '_', '_', '_'],
-                            ['_', '_', '_', 'P', '_', '_', '_', '_'],
-                            ['_', 'Q', '_', '_', '_', '_', '_', '_'],
+                            ['r', '_', '_', 'p', '_', '_', '_', 'N'],
+                            ['P', '_', '_', 'p', '_', '_', '_', 'r'],
                             ['_', '_', '_', 'p', '_', '_', '_', '_'],
-                            ['P', 'P', 'P', '_', 'K', '_', 'P', 'P'],
-                            ['R', 'N', 'B', '_', '_', '_', 'N', 'R']]  # list?
+                            ['_', 'P', 'P', '_', 'K', '_', 'P', 'P'],
+                            ['R', 'N', 'B', 'Q', '_', '_', '_', 'R']]  # list?
 
         self._white_dict = {'K': 1, 'Q': 1, 'R': 2, 'B': 2, 'N': 2, 'P': 8}
         self._black_dict = {'k': 1, 'q': 1, 'r': 2, 'b': 2, 'n': 2, 'p': 8}
@@ -176,8 +176,10 @@ class ChessVar:
         
         if self._game_board[start_column][start_row] == 'b':
             pass
+
         if self._game_board[start_column][start_row] == 'r':
-            pass
+            return self.move_black_rook(start_coord, end_coord)
+        
         if self._game_board[start_column][start_row] == 'q':
             pass
 
@@ -241,8 +243,8 @@ class ChessVar:
             return False
 
     def move_black_knight(self, start_coord, end_coord):
-        # 'N'
-        # start b1, g1
+        # 'n'
+        # start b8, g8
         # open: col +/- 1 row + 2 or col +/- 2 row + 1;
         # subsequent: col +/- 1, row +/- 2 or col +/- 2 row +/- 1
         # no special capture
@@ -253,7 +255,10 @@ class ChessVar:
         row_result = end_row - start_row
         column_result = end_column - start_column
 
-        if 0 > end_column > 7 or 0 > end_row > 7:
+        if 0 > end_column > 7 or 0 > end_row > 7:  # already check?
+            return False
+        
+        if abs(column_result) > 2 or abs(row_result) > 2:
             return False
         
         if self._game_board[end_column][end_row] == '_':
@@ -291,13 +296,112 @@ class ChessVar:
         # TODO
         pass
 
-    def move_white_rook(self):
-        # 'R'
-        # start: a1, h1
+    def move_black_rook(self, start_coord, end_coord):
+        # 'r'
+        # start: a8, h8
         # open: col + open space OR row + open space
         # subsequent: col +/- open space OR row +/- open space
         # TODO
-        pass
+        
+        start_row, start_column = start_coord
+        end_row, end_column = end_coord
+
+        row_result = end_row - start_row
+        column_result = end_column - start_column
+
+        if row_result == 0:                             # check_column
+            check_black = self._game_board[end_column][end_row].islower()  
+            if check_black is True:
+                return False
+            else:
+                if self._game_board[end_column][end_row] == '_':
+                    for square in range(abs(column_result)):
+                        if self._game_board[start_column][start_row + square] != '_':
+                            return False
+                        else:
+                            self._game_board[start_column][start_row] = '_'
+                            self._game_board[end_column][end_row] = 'r'
+                check_opponent = self._game_board[end_column][end_row].isupper()
+                if check_opponent is True:
+                    for square in range(abs(column_result)):
+                        if self._game_board[start_column][start_row + square] != '_':
+                            return False
+                        else:
+                            captured_piece = self._game_board[end_column][end_row]
+                            self._white_dict[captured_piece] -= 1
+                            if self._white_dict[captured_piece] == 0:
+                                self.set_game_state('BLACK_WON')
+
+                            self._game_board[start_column][start_row] = '_'
+                            self._game_board[end_column][end_row] = 'r'
+
+                            return True
+        else:                                                               #check column
+            check_black = self._game_board[end_column][end_row].islower()  
+            if check_black is True:
+                return False
+            else:
+                if row_result < 0:   #moving left 
+                    if self._game_board[end_column][end_row] == '_':
+                        pos = 1
+                        for _ in range(abs(row_result)):
+                            if self._game_board[start_column][start_row - pos] == '_':
+                                pos += 1
+                            else:
+                                return False
+                    
+                        self._game_board[start_column][start_row] = '_'
+                        self._game_board[end_column][end_row] = 'r'
+                        return True
+                    check_opponent = self._game_board[end_column][end_row].isupper()
+                    if check_opponent is True:
+                        pos = 1
+                        for _ in range(abs(row_result)-1):
+                            if self._game_board[start_column][start_row - pos] == '_':
+                                pos += 1
+                            else:
+                                return False
+                    
+                        captured_piece = self._game_board[end_column][end_row]
+                        self._white_dict[captured_piece] -= 1
+                        if self._white_dict[captured_piece] == 0:
+                            self.set_game_state('BLACK_WON')
+
+                        self._game_board[start_column][start_row] = '_'
+                        self._game_board[end_column][end_row] = 'r'
+
+                        return True
+                else: #moving right
+                    if self._game_board[end_column][end_row] == '_':
+                        pos = 1
+                        for _ in range(abs(row_result)-1):
+                            if self._game_board[start_column][start_row + pos] == '_':
+                                pos += 1
+                            else:
+                                return False
+                    
+                        self._game_board[start_column][start_row] = '_'
+                        self._game_board[end_column][end_row] = 'r'
+                        return True
+                        
+                    check_opponent = self._game_board[end_column][end_row].isupper()
+                    if check_opponent is True:
+                        pos = 1
+                        for _ in range(abs(row_result)-1):
+                            if self._game_board[start_column][start_row + pos] == '_':
+                                pos += 1
+                            else:
+                                return False
+                    
+                        captured_piece = self._game_board[end_column][end_row]
+                        self._white_dict[captured_piece] -= 1
+                        if self._white_dict[captured_piece] == 0:
+                            self.set_game_state('BLACK_WON')
+
+                        self._game_board[start_column][start_row] = '_'
+                        self._game_board[end_column][end_row] = 'r'
+
+                        return True
 
     def move_white_queen(self):
         # 'Q'
@@ -465,7 +569,7 @@ class ChessVar:
         # TODO
         pass
 
-    def move_black_rook(self):
+    def move_white_rook(self):
         # 'r'
         # start: a8, h8
         # open: col +/- open space OR row - open space
@@ -498,7 +602,7 @@ class ChessVar:
         row_result = end_row - start_row
         column_result = end_column - start_column
 
-        if 0 >= end_column > 7 or 0 >= end_row > 7:
+        if 0 >= end_column > 7 or 0 >= end_row > 7: # already check this?
             return False
         
         if 1 > column_result > 2:
@@ -608,7 +712,9 @@ def main():
     #print(cv.convert_algebraic('b8'))
     print(cv.make_move('e2', 'f1'))
 
-    #print(cv.make_move('e6', 'd5'))
+    #print(cv.make_move('a5', 'h5'))
+
+    print(cv.make_move('h4', 'a4'))
 
    # print(cv.make_move('g7', 'g6'))
 
