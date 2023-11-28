@@ -149,7 +149,8 @@ class ChessVar:
             return self.move_white_pawn(start_coord, end_coord)
 
         if self._game_board[start_column][start_row] == 'N':
-            pass
+            return self.move_white_knight(start_coord, end_coord)
+        
         if self._game_board[start_column][start_row] == 'B':
             pass
         if self._game_board[start_column][start_row] == 'R':
@@ -170,7 +171,8 @@ class ChessVar:
             return self.move_black_pawn(start_coord, end_coord)
 
         if self._game_board[start_column][start_row] == 'n':
-            pass
+            return self.move_black_knight(start_coord, end_coord)
+        
         if self._game_board[start_column][start_row] == 'b':
             pass
         if self._game_board[start_column][start_row] == 'r':
@@ -185,10 +187,10 @@ class ChessVar:
 
     def move_black_pawn(self, start_coord, end_coord): # not returning True or False
         """
-        checks if black pawn move is valid, if so moves the pawn if not, returns False
+        checks if black pawn move is valid if so moves the pawn and returns True, if not returns False
         """
-        # 'P'
-        # start:  a2 - h2
+        # 'p'
+        # start:  a7 - h7
         # open: row +1 or +2
         # subsequent: row +1
         # capture: column +/- 1, row +1
@@ -236,14 +238,45 @@ class ChessVar:
         else:
             return False
 
-    def move_white_knight(self):
+    def move_black_knight(self, start_coord, end_coord):
         # 'N'
         # start b1, g1
         # open: col +/- 1 row + 2 or col +/- 2 row + 1;
         # subsequent: col +/- 1, row +/- 2 or col +/- 2 row +/- 1
         # no special capture
         # TODO
-        pass
+        start_row, start_column = start_coord
+        end_row, end_column = end_coord
+
+        row_result = end_row - start_row
+        column_result = end_column - start_column
+
+        if 0 > column_result > 7 or 0 > row_result > 7:
+            return False
+        
+        if self._game_board[end_column][end_row] == '_':
+            if abs(column_result) == 1 and abs(row_result) == 2:
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'n'
+                return True
+            if abs(column_result) == 2 and abs(row_result) == 1:
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'n'
+                return True
+        else:
+            return False
+        
+        check_opponent = self._game_board[end_column][end_row].isupper()
+        if check_opponent is True:
+                captured_piece = self._game_board[end_column][end_row]
+                self._white_dict[captured_piece] -= 1
+                if self._white_dict[captured_piece] == 0:
+                    self.set_game_state('BLACK_WON')
+
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'n'
+        else:
+            return False
 
     def move_white_bishop(self):
         # 'B'
@@ -285,7 +318,7 @@ class ChessVar:
 
     def move_white_pawn(self, start_coord, end_coord):
         """
-        checks if white pawn move is valid, if so moves the pawn if not, returns False
+        checks if white pawn move is valid, if so moves the pawn and returns True, if not, returns False
         """
         # 'p'
         # start:  a7 - h7
@@ -337,15 +370,46 @@ class ChessVar:
         else:
             return False
 
-    def move_black_knight(self):
+    def move_white_knight(self, start_coord, end_coord):
         # 'n'
         # start b8, g8
         # open: col +/- 1 row + 2 or col +/- 2 row + 1;
         # subsequent: col +/- 1, row +/- 2 or col +/- 2 row +/- 1
         # no special capture
         # TODO
-        pass
+        start_row, start_column = start_coord
+        end_row, end_column = end_coord
 
+        row_result = end_row - start_row
+        column_result = end_column - start_column
+
+        if 0 > column_result > 7 or 0 > row_result > 7:
+            return False
+        
+        if self._game_board[end_column][end_row] == '_':
+            if abs(column_result) == 1 and abs(row_result) == 2:
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'N'
+                return True
+            if abs(column_result) == 2 and abs(row_result) == 1:
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'N'
+                return True
+        else:
+            return False
+        
+        check_opponent = self._game_board[end_column][end_row].islower()
+        if check_opponent is True:
+                captured_piece = self._game_board[end_column][end_row]
+                self._black_dict[captured_piece] -= 1
+                if self._black_dict[captured_piece] == 0:
+                    self.set_game_state('WHITE_WON')
+
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'N'
+        else: 
+            return False
+        
     def move_black_bishop(self):
         # 'b'
         # start: c8, f8
@@ -443,14 +507,22 @@ class ChessVar:
 def main():
     cv = ChessVar()
     #print(cv.convert_algebraic('b8'))
-    print(cv.make_move('a2', 'a4'))
+    print(cv.make_move('b1', 'a3'))
 
     print(cv.make_move('g7', 'g6'))
 
-    print(cv.make_move('b2', 'b3'))
+    print(cv.make_move('e2', 'e4'))
 
-    #print(cv.make_move('h7', 'h6'))
-    #cv.print_board()
+    print(cv.make_move('g8', 'f6'))
+
+    print(cv.make_move('e4', 'e5'))  # same black pawn not working
+
+    print(cv.make_move('b8', 'c6'))
+
+    print(cv.make_move('e5', 'f6'))
+
+    print(cv.make_move('c6', 'b8'))
+    cv.print_board()
 
     print(cv._black_dict, cv._white_dict)
 
