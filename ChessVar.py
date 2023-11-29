@@ -12,10 +12,10 @@ class ChessVar:
         self._board_size = 8
         self._game_board = [['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
                             ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
-                            ['_', '_', 'p', 'R', 'r', '_', '_', '_'],
-                            ['_', '_', 'p', 'b', 'n', '_', '_', '_'],
-                            ['_', '_', 'P', 'P', 'P', '_', '_', '_'],
-                            ['_', '_', 'P', 'K', 'P', '_', '_', '_'],
+                            ['P', '_', '_', '_', '_', '_', '_', '_'],
+                            ['_', '_', '_', '_', '_', '_', '_', '_'],
+                            ['_', '_', '_', '_', '_', '_', '_', '_'],
+                            ['_', '_', '_', '_', '_', '_', '_', '_'],
                             ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
                             ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]  
 
@@ -106,6 +106,10 @@ class ChessVar:
                 return False
             if square.islower() is True:  # trying to move black piece
                 return False
+            
+            check_white = self._game_board[end_column][end_row].isupper() # end square is same player
+            if check_white is True:
+                return False
 
             valid_move_white = self.check_white_move(start_coord, end_coord)
             if valid_move_white is False:
@@ -118,7 +122,12 @@ class ChessVar:
         if self._move_state == 'BLACK':
             if square == '_': # empty square
                 return False
+            
             if square.isupper() is True: # trying to move white piece
+                return False
+            
+            check_black = self._game_board[end_column][end_row].islower() # end square is same player
+            if check_black is True:
                 return False
             
             valid_move_black = self.check_black_move(start_coord, end_coord) 
@@ -197,6 +206,46 @@ class ChessVar:
         if piece == 'k':
             return self.move_black_king(start_coord, end_coord)
 
+    def black_capture(self, start_column, start_row, end_column, end_row):
+        """
+        Method which takes four parameters, the starting and end coordinates, and 'captures' opponent's
+        piece, decrements the opponent's dictionary(which holds how many of each piece remain)  based on the piece 
+        captured
+
+        Updates starting square to empty, and end square to capturing piece
+
+        Returns True
+        """
+        captured_piece = self._game_board[end_column][end_row]
+        self._black_dict[captured_piece] -= 1
+        if self._black_dict[captured_piece] == 0:
+            self.set_game_state('WHITE_WON')
+
+        self._game_board[end_column][end_row] = self._game_board[start_column][start_row]
+        self._game_board[start_column][start_row] = '_'
+
+        return True
+
+    def white_capture(self, start_column, start_row, end_column, end_row):
+        """
+        Method which takes four parameters, the starting and end coordinates, and 'captures' opponent's
+        piece, decrements the opponent's dictionary(which holds how many of each piece remain)  based on the piece 
+        captured
+
+        Updates starting square to empty, and end square to capturing piece
+
+        Returns True
+        """
+        captured_piece = self._game_board[end_column][end_row]
+        self._white_dict[captured_piece] -= 1
+        if self._white_dict[captured_piece] == 0:
+            self.set_game_state('BLACK_WON')
+
+        self._game_board[end_column][end_row] = self._game_board[start_column][start_row]
+        self._game_board[start_column][start_row] = '_'
+        
+        return True
+
     def move_black_pawn(self, start_coord, end_coord):
         """
         Black Pawn: 'p', 8
@@ -250,6 +299,11 @@ class ChessVar:
             if abs(row_result) == 1 and column_result == 1:
                 check_opponent = self._game_board[end_column][end_row].isupper()  # capture
                 if check_opponent is True:
+                    return self.white_capture(start_column, start_row, end_column, end_row)
+                else:
+                    return False
+                """
+                if check_opponent is True:
                     captured_piece = self._game_board[end_column][end_row]
                     self._white_dict[captured_piece] -= 1
                     if self._white_dict[captured_piece] == 0:
@@ -259,9 +313,15 @@ class ChessVar:
                     self._game_board[end_column][end_row] = 'p'
 
                     return True
+                """
             
         if abs(row_result) == 1 and column_result == 1:
             check_opponent = self._game_board[end_column][end_row].isupper()  # capture
+            if check_opponent is True:
+                return self.white_capture(start_column, start_row, end_column, end_row)
+            else:
+                return False
+            """
             if check_opponent is True:
                 captured_piece = self._game_board[end_column][end_row]
                 self._white_dict[captured_piece] -= 1
@@ -274,6 +334,7 @@ class ChessVar:
                 return True
             else:
                 return False
+            """
 
         if column_result == 1 and self._game_board[end_column][end_row] == '_':
             self._game_board[start_column][start_row] = '_'
@@ -687,9 +748,7 @@ class ChessVar:
         row_result = end_row - start_row
         column_result = end_column - start_column
 
-        check_black = self._game_board[end_column][end_row].islower()  
-        if check_black is True:
-            return False
+
         
         if abs(column_result) == abs(row_result): #bishop functionality 
             if column_result > 0 and row_result < 0:   #moving down + left
@@ -1060,6 +1119,10 @@ class ChessVar:
             if column_result == -1 and abs(row_result) == 1:
                 check_opponent = self._game_board[end_column][end_row].islower()  # capture
                 if check_opponent is True:
+                    return self.black_capture(start_column, start_row, end_column, end_row)
+                else:
+                    return False
+                    """
 
                     captured_piece = self._game_board[end_column][end_row]
                     self._black_dict[captured_piece] -= 1
@@ -1070,11 +1133,15 @@ class ChessVar:
                     self._game_board[end_column][end_row] = 'P'
 
                     return True
-
+                    """
         if column_result == -1 and abs(row_result) == 1:
             check_opponent = self._game_board[end_column][end_row].islower()  # capture
             if check_opponent is True:
+                return self.black_capture(start_column, start_row, end_column, end_row)
+            else:
+                return False
 
+                """
                 captured_piece = self._game_board[end_column][end_row]
                 self._black_dict[captured_piece] -= 1
                 if self._black_dict[captured_piece] == 0:
@@ -1084,6 +1151,7 @@ class ChessVar:
                 self._game_board[end_column][end_row] = 'P'
 
                 return True
+                """
 
         if column_result == -1 and self._game_board[end_column][end_row] == '_':
             self._game_board[start_column][start_row] = '_'
@@ -1181,7 +1249,7 @@ class ChessVar:
             return False
 
         #if column_result > 0:                             
-        check_white = self._game_board[end_column][end_row].isupper()  
+        check_white = self._game_board[end_column][end_row].isupper()  #remove
         if check_white is True:
             return False
         else:
@@ -1339,7 +1407,7 @@ class ChessVar:
             return False
             
         if row_result == 0:                             # check_row
-            check_white = self._game_board[end_column][end_row].isupper()  
+            check_white = self._game_board[end_column][end_row].isupper()  #remove
             if check_white is True:
                 return False
             else:
@@ -1408,7 +1476,7 @@ class ChessVar:
                         return True
     
         else:                                                               #check column
-            check_white = self._game_board[end_column][end_row].isupper()  
+            check_white = self._game_board[end_column][end_row].isupper()  #remove
             if check_white is True:
                 return False
             else:
@@ -1499,10 +1567,6 @@ class ChessVar:
 
         row_result = end_row - start_row
         column_result = end_column - start_column
-
-        check_white = self._game_board[end_column][end_row].isupper()  
-        if check_white is True:
-            return False
         
         if abs(column_result) == abs(row_result): #bishop functionality 
             if column_result > 0 and row_result < 0:   #moving down + left
@@ -1837,19 +1901,22 @@ def main():
         ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]
     
     cv = ChessVar()
+
+    #print(cv.black_capture(2, 0, 1, 1))
+    # print(cv.white_capture(1,1,0,2))
     #print(cv.convert_algebraic('b8'))
-    print(cv.make_move('d6', 'd5'))
-    print(cv.get_game_state())
+    print(cv.make_move('a6', 'a7'))
+    #print(cv.get_game_state())
 
-   # print(cv.make_move('d3', 'a3'))
+    #print(cv.make_move('b7', 'a6'))
 
-    #print(cv.make_move('a1', 'a3'))
+    #print(cv.make_move('e2', 'e4'))
 
-    #print(cv.make_move('g2', 'g3'))
+    #print(cv.make_move('e7', 'e6'))
 
-    #print(cv.make_move('b5', 'b4'))
+    #print(cv.make_move('c1', 'g5'))
 
-    #print(cv.make_move('g3', 'h4'))
+    #print(cv.make_move('g8', 'f6'))
 
    # print(cv.make_move('b4', 'b3'))  
    # print(cv.make_move('b8', 'c6'))
