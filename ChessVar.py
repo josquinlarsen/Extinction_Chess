@@ -199,6 +199,7 @@ class ChessVar:
 
     def move_black_pawn(self, start_coord, end_coord):
         """
+        Black Pawn: 'p', 8
         Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
         or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'p'
         for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
@@ -282,12 +283,25 @@ class ChessVar:
             return False
 
     def move_black_knight(self, start_coord, end_coord):
-        # 'n'
-        # start b8, g8
-        # open: col +/- 1 row + 2 or col +/- 2 row + 1;
-        # subsequent: col +/- 1, row +/- 2 or col +/- 2 row +/- 1
-        # no special capture
-        # TODO
+        """
+        Black Knight: 'n', 2
+        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
+        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'n'
+        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
+        If the piece captured is the only piece or only remaining piece, the game state is updated to 'BLACK_WON'
+        
+        Valid moves: - End square is empty '_' or the opponent's piece
+                     - End square is on the chess board
+                     - Can move (L):
+                            - forward one square, left or right two squares
+                            - backward one square, left or right two squares
+                            - forward two squares, left or right one square
+                            - backward two sqaures, left or right one square
+
+        Capture:     - Opponent's piece on end square
+
+        If move is vaild, returns True otherwise returns False 
+        """
         start_row, start_column = start_coord
         end_row, end_column = end_coord
 
@@ -320,16 +334,26 @@ class ChessVar:
             self._game_board[end_column][end_row] = 'n'
 
             return True
+        
         else:
             return False
 
     def move_black_bishop(self, start_coord, end_coord):
-        # 'B'
-        # start: c1, f1
-        # open: col +open space row + open space (col +1, row+1)
-        # subsequent: col +/-1 open space, row +/- open space
-        # have to check for blocks
-        # TODO
+        """
+        Black bishop: 'b', 2
+        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
+        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'b'
+        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
+        If the piece captured is the only piece or only remaining piece, the game state is updated to 'BLACK_WON'
+        
+        Valid moves: - End square is empty '_' or the opponent's piece, there are no pieces blocking route
+                     - End square is on the chess board
+                     - Can move diagonally forwards or backwards:
+
+        Capture:     - Opponent's piece on end square
+
+        If move is vaild, returns True otherwise returns False 
+        """
         start_row, start_column = start_coord
         end_row, end_column = end_coord
 
@@ -474,12 +498,22 @@ class ChessVar:
                     return True
 
     def move_black_rook(self, start_coord, end_coord):
-        # 'r'
-        # start: a8, h8
-        # open: col + open space OR row + open space
-        # subsequent: col +/- open space OR row +/- open space
-        # TODO
+        """
+        Black Rook: 'r', 2
+        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
+        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'r'
+        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
+        If the piece captured is the only piece or only remaining piece, the game state is updated to 'BLACK_WON'
         
+        Valid moves: - End square is empty '_' or the opponent's piece, there are no pieces blocking route
+                     - End square is on the chess board
+                     - Can move horizontally and vertically forwards and backwards:
+
+        Capture:     - Opponent's piece on end square
+
+        If move is vaild, returns True otherwise returns False 
+        """
+    
         start_row, start_column = start_coord
         end_row, end_column = end_coord
 
@@ -506,6 +540,7 @@ class ChessVar:
                         self._game_board[start_column][start_row] = '_'
                         self._game_board[end_column][end_row] = 'r'
                         return True
+                    
                     check_opponent = self._game_board[end_column][end_row].isupper()
                     if check_opponent is True:
                         pos = 1
@@ -524,6 +559,7 @@ class ChessVar:
                         self._game_board[end_column][end_row] = 'r'
 
                         return True
+                    
                 else: #moving down
                     if self._game_board[end_column][end_row] == '_':
                         pos = 1
@@ -560,6 +596,7 @@ class ChessVar:
             check_black = self._game_board[end_column][end_row].islower()  
             if check_black is True:
                 return False
+            
             else:
                 if row_result < 0:   #moving left 
                     if self._game_board[end_column][end_row] == '_':
@@ -573,6 +610,7 @@ class ChessVar:
                         self._game_board[start_column][start_row] = '_'
                         self._game_board[end_column][end_row] = 'r'
                         return True
+                    
                     check_opponent = self._game_board[end_column][end_row].isupper()
                     if check_opponent is True:
                         pos = 1
@@ -591,6 +629,7 @@ class ChessVar:
                         self._game_board[end_column][end_row] = 'r'
 
                         return True
+                    
                 else: #moving right
                     if self._game_board[end_column][end_row] == '_':
                         pos = 1
@@ -602,6 +641,7 @@ class ChessVar:
                     
                         self._game_board[start_column][start_row] = '_'
                         self._game_board[end_column][end_row] = 'r'
+
                         return True
                         
                     check_opponent = self._game_board[end_column][end_row].isupper()
@@ -624,15 +664,23 @@ class ChessVar:
                         return True
 
     def move_black_queen(self, start_coord, end_coord):
-        # 'q' bishop + rook 
-        # start: d8
-        # open:
-        #   bishop - col + open space row + open space (col +1, row+1)
-        #   rook - col + open space OR row + open space
-        # subsequent:
-        #   bishop - col +/-1 open space, row +/- open space
-        #   rook - col +/- open space OR row +/- open space
-        # TODO
+        """
+        Black Queen: 'q', 1
+        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
+        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'q'
+        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
+        If the piece captured is the only piece or only remaining piece, the game state is updated to 'BLACK_WON'
+        
+        Valid moves: - End square is empty '_' or the opponent's piece, there are no pieces blocking route
+                     - End square is on the chess board
+                     - Can move (within the range of the board):
+                                - horizontally or vertically, forwards and backwards
+                                - diagonally forwards or backwards
+
+        Capture:     - Opponent's piece on end square
+
+        If move is vaild, returns True otherwise returns False 
+        """
         start_row, start_column = start_coord
         end_row, end_column = end_coord
 
@@ -898,12 +946,23 @@ class ChessVar:
             return False
         
     def move_black_king(self, start_coord, end_coord):  
-        # 'K'
-        # start: e7
-        # open: col +/-1, row + 1, col +/- 1 and row - 1
-        # subsequent: col +/-1, row +/- 1, col +/- 1 and row +/- 1
-        #       if not on edge
-        # TODO
+        """
+        Black King: 'k', 1
+        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
+        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'k'
+        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
+        If the piece captured is the only piece or only remaining piece, the game state is updated to 'BLACK_WON'
+        
+        Valid moves: - End square is empty '_' or the opponent's piece, there are no pieces blocking route
+                     - End square is on the chess board
+                     - Can move one square:
+                                - horizontally or vertically, forwards and backwards
+                                - diagonally forwards or backwards
+
+        Capture:     - Opponent's piece on end square
+
+        If move is vaild, returns True otherwise returns False 
+        """
         start_row, start_column = start_coord
         end_row, end_column = end_coord
 
@@ -949,7 +1008,7 @@ class ChessVar:
 
     def move_white_pawn(self, start_coord, end_coord):
         """
-        White Pawn: 'P'
+        White Pawn: 'P', 8
         Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
         or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'P'
         for white pawn. If a piece is captured, the opponent's dictionary is decremented by 1 for the corresponding piece.
@@ -1033,12 +1092,25 @@ class ChessVar:
             return False
 
     def move_white_knight(self, start_coord, end_coord):
-        # 'n'
-        # start b8, g8
-        # open: col +/- 1 row + 2 or col +/- 2 row + 1;
-        # subsequent: col +/- 1, row +/- 2 or col +/- 2 row +/- 1
-        # no special capture
-        # TODO
+        """
+        White Knight: 'N', 2
+        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
+        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'N'
+        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
+        If the piece captured is the only piece or only remaining piece, the game state is updated to 'WHITE_WON'
+        
+        Valid moves: - End square is empty '_' or the opponent's piece
+                     - End square is on the chess board
+                     - Can move (L):
+                            - forward one square, left or right two squares
+                            - backward one square, left or right two squares
+                            - forward two squares, left or right one square
+                            - backward two sqaures, left or right one square
+
+        Capture:     - Opponent's piece on end square
+
+        If move is vaild, returns True otherwise returns False 
+        """
         start_row, start_column = start_coord
         end_row, end_column = end_coord
 
@@ -1069,16 +1141,27 @@ class ChessVar:
 
                 self._game_board[start_column][start_row] = '_'
                 self._game_board[end_column][end_row] = 'N'
+
+                return True
         else: 
             return False
         
     def move_white_bishop(self, start_coord, end_coord):
-        # 'b'
-        # start: c8, f8
-        # open: col +/- open space row - open space (col +/-1, row -1; 1:1)
-        # subsequent: col +/-1 open space, row +/- open space
-        # have to check for blocks
-        # TODO
+        """
+        White Bishop:'B', 2
+        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
+        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'B'
+        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
+        If the piece captured is the only piece or only remaining piece, the game state is updated to 'WHITE_WON'
+        
+        Valid moves: - End square is empty '_' or the opponent's piece, there are no pieces blocking route
+                     - End square is on the chess board
+                     - Can move diagonally forwards and backwards
+
+        Capture:     - Opponent's piece on end square
+
+        If move is vaild, returns True otherwise returns False 
+        """
         start_row, start_column = start_coord
         end_row, end_column = end_coord
 
@@ -1223,11 +1306,21 @@ class ChessVar:
                     return True
 
     def move_white_rook(self, start_coord, end_coord):
-        # 'R'
-        # start: a1, h1
-        # open: col +/- open space OR row - open space
-        # subsequent: col +/- open space OR row +/- open space
-        # TODO
+        """
+        White Rook: 'R', 2
+        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
+        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'R'
+        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
+        If the piece captured is the only piece or only remaining piece, the game state is updated to 'WHITE_WON'
+        
+        Valid moves: - End square is empty '_' or the opponent's piece, there are no pieces blocking route
+                     - End square is on the chess board
+                     - Can move horizontally and vertically forwards and backwards:
+
+        Capture:     - Opponent's piece on end square
+
+        If move is vaild, returns True otherwise returns False 
+        """
         start_row, start_column = start_coord
         end_row, end_column = end_coord
 
@@ -1373,15 +1466,23 @@ class ChessVar:
                         return True
 
     def move_white_queen(self, start_coord, end_coord):
-        # 'Q'
-        # start: d1
-        # open:
-        #   bishop - col +/- open space row - open space (col +/- 1, row+1)
-        #   rook - col +/- open space OR row - open space
-        # subsequent:
-        #   bishop - col +/-1 open space, row +/- open space
-        #   rook - col +/- open space OR row +/- open space
-        # TODO
+        """
+        White Queen: 'Q', 1
+        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
+        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'Q'
+        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
+        If the piece captured is the only piece or only remaining piece, the game state is updated to 'WHITE_WON'
+        
+        Valid moves: - End square is empty '_' or the opponent's piece, there are no pieces blocking route
+                     - End square is on the chess board
+                     - Can move:
+                                - horizontally and vertically forwards and backwards
+                                - diagonally forwards and backwards
+
+        Capture:     - Opponent's piece on end square
+
+        If move is vaild, returns True otherwise returns False 
+        """
         start_row, start_column = start_coord
         end_row, end_column = end_coord
 
@@ -1649,12 +1750,23 @@ class ChessVar:
             return False
 
     def move_white_king(self, start_coord, end_coord):
-        # 'K'
-        # start: e1
-        # open: col +/-1; row - 1, col +/- 1 and row + 1
-        # subsequent: col +/-1, row +/- 1, col +/- 1 and row +/- 1
-        #       if not on edge
-        # TODO
+        """
+        White King: 'K', 1
+        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
+        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'K'
+        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
+        If the piece captured is the only piece or only remaining piece, the game state is updated to 'WHITE_WON'
+        
+        Valid moves: - End square is empty '_' or the opponent's piece, there are no pieces blocking route
+                     - End square is on the chess board
+                     - Can move one square:
+                                - horizontally or vertically, forwards and backwards
+                                - diagonally forwards or backwards
+
+        Capture:     - Opponent's piece on end square
+
+        If move is vaild, returns True otherwise returns False 
+        """
         start_row, start_column = start_coord
         end_row, end_column = end_coord
 
