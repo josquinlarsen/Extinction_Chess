@@ -11,10 +11,10 @@ class ChessVar:
         self._move_state = 'WHITE'  # 'BLACK'
         self._game_board = [['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
                             ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+                            ['P', '_', 'P', '_', '_', '_', '_', '_'],
                             ['_', '_', '_', '_', '_', '_', '_', '_'],
-                            ['_', '_', '_', 'R', '_', '_', '_', '_'],
-                            ['_', '_', '_', 'b', '_', '_', '_', '_'],
-                            ['_', '_', '_', '_', '_', '_', '_', '_'],
+                            ['_', '_', '_', '_', 'p', '_', '_', '_'],
+                            ['_', '_', 'p', '_', '_', '_', '_', '_'],
                             ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
                             ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]  
 
@@ -112,7 +112,8 @@ class ChessVar:
             if check_white is True:
                 return False
 
-            valid_move_white = self.check_white_move(start_coord, end_coord)
+            #valid_move_white = self.check_white_move(start_coord, end_coord)
+            valid_move_white = self.check_move(start_coord, end_coord)
             if valid_move_white is False:  #set True ? 
                 return False
             
@@ -132,7 +133,8 @@ class ChessVar:
             if check_black is True:
                 return False
             
-            valid_move_black = self.check_black_move(start_coord, end_coord) 
+            #valid_move_black = self.check_black_move(start_coord, end_coord) 
+            valid_move_black = self.check_move(start_coord, end_coord)
             if valid_move_black is False: #set to True?
                 return False
             
@@ -164,7 +166,8 @@ class ChessVar:
             return self.move_white_pawn(start_coord, end_coord)
 
         if self._game_board[start_column][start_row] == 'N':
-            return self.move_white_knight(start_coord, end_coord)
+            # return self.move_white_knight(start_coord, end_coord)
+            return self.move_knight(start_coord, end_coord)
         
         if self._game_board[start_column][start_row] == 'B':
             return self.move_white_bishop(start_coord, end_coord)
@@ -194,7 +197,8 @@ class ChessVar:
             return self.move_black_pawn(start_coord, end_coord)
 
         if piece == 'n':
-            return self.move_black_knight(start_coord, end_coord)
+            # return self.move_black_knight(start_coord, end_coord)
+            return self.move_knight(start_coord, end_coord)
         
         if self._game_board[start_column][start_row] == 'b':
             return self.move_black_bishop(start_coord, end_coord)
@@ -207,6 +211,41 @@ class ChessVar:
 
         if piece == 'k':
             return self.move_black_king(start_coord, end_coord)
+
+    def check_move(self, start_coord, end_coord):
+        """
+        Method which takes two parameters: the start and end coordinates converted in the make_move
+        method. It then checks which piece is at the start location and passes the coordinates to the
+        appropriate move_piece method for further move validation. 
+
+        Returns True or False depending on the return value of the move_piece method.
+        """
+        start_row, start_column = start_coord
+        end_row, end_column = end_coord
+        piece = self._game_board[start_column][start_row]
+
+        if piece == 'p':
+            return self.move_black_pawn(start_coord, end_coord)
+        
+        if piece == 'P':
+            return self.move_white_pawn(start_coord, end_coord)
+
+        if piece == 'n' or piece == 'N':
+            # return self.move_black_knight(start_coord, end_coord)
+            return self.move_knight(start_coord, end_coord)
+        
+        if piece == 'b' or piece == 'B':
+            return self.move_bishop(start_coord, end_coord)
+
+        if piece == 'r' or piece == 'B':
+            return self.move_rook(start_coord, end_coord)
+        
+        if piece == 'q' or piece == 'Q':
+            return self.move_queen(start_coord, end_coord)
+
+        if piece == 'k' or piece == 'K':
+            return self.move_king(start_coord, end_coord)
+
 
     def black_capture(self, start_column, start_row, end_column, end_row):
         """
@@ -287,15 +326,17 @@ class ChessVar:
             
             if column_result == 2 and self._game_board[end_column][end_row] == '_':
                 if self._game_board[start_column + 1][start_row] == '_':
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'p'
+                    self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row], self._game_board[start_column][start_row]
+                    #self._game_board[start_column][start_row] = '_'
+                    #self._game_board[end_column][end_row] = 'p'
                     return True
                 else:
                     return False
 
             if column_result == 1 and self._game_board[end_column][end_row] == '_':
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'p'
+                self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row], self._game_board[start_column][start_row]
+               # self._game_board[start_column][start_row] = '_'
+               # self._game_board[end_column][end_row] = 'p'
                 return True
             
             if abs(row_result) == 1 and column_result == 1:
@@ -304,18 +345,6 @@ class ChessVar:
                     return self.white_capture(start_column, start_row, end_column, end_row)
                 else:
                     return False
-                """
-                if check_opponent is True:
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._white_dict[captured_piece] -= 1
-                    if self._white_dict[captured_piece] == 0:
-                        self.set_game_state('BLACK_WON')
-
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'p'
-
-                    return True
-                """
             
         if abs(row_result) == 1 and column_result == 1:
             check_opponent = self._game_board[end_column][end_row].isupper()  # capture
@@ -323,24 +352,11 @@ class ChessVar:
                 return self.white_capture(start_column, start_row, end_column, end_row)
             else:
                 return False
-            """
-            if check_opponent is True:
-                captured_piece = self._game_board[end_column][end_row]
-                self._white_dict[captured_piece] -= 1
-                if self._white_dict[captured_piece] == 0:
-                    self.set_game_state('BLACK_WON')
-
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'p'
-
-                return True
-            else:
-                return False
-            """
 
         if column_result == 1 and self._game_board[end_column][end_row] == '_':
-            self._game_board[start_column][start_row] = '_'
-            self._game_board[end_column][end_row] = 'p'
+            self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row], self._game_board[start_column][start_row]
+            #self._game_board[start_column][start_row] = '_'
+            #self._game_board[end_column][end_row] = 'p'
             return True
         else:
             return False
@@ -392,21 +408,6 @@ class ChessVar:
             return self.white_capture(start_column, start_row, end_column, end_row)
         else:
             return False
-
-            """
-            captured_piece = self._game_board[end_column][end_row]
-            self._white_dict[captured_piece] -= 1
-            if self._white_dict[captured_piece] == 0:
-                self.set_game_state('BLACK_WON')
-
-            self._game_board[start_column][start_row] = '_'
-            self._game_board[end_column][end_row] = 'n'
-
-            return True
-        
-        else:
-            return False
-            """
 
     def move_black_bishop(self, start_coord, end_coord):
         """
@@ -466,19 +467,7 @@ class ChessVar:
                 return self.white_capture(start_column, start_row, end_column, end_row)
             else:
                 return False
-                    
-                """
-                captured_piece = self._game_board[end_column][end_row]
-                self._white_dict[captured_piece] -= 1
-                if self._white_dict[captured_piece] == 0:
-                    self.set_game_state('BLACK_WON')
-
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'b'
-
-                return True
-                """
-            
+                                
         if column_result > 0 and row_result > 0:   #moving down + right
             if self._game_board[end_column][end_row] == '_':
                 pos = 1
@@ -504,17 +493,6 @@ class ChessVar:
                 return self.white_capture(start_column, start_row, end_column, end_row)
             else:
                 return False
-                """
-                captured_piece = self._game_board[end_column][end_row]
-                self._white_dict[captured_piece] -= 1
-                if self._white_dict[captured_piece] == 0:
-                    self.set_game_state('BLACK_WON')
-
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'b'
-
-                return True
-                """
 
         if column_result < 0 and row_result < 0 : #moving up + left
             if self._game_board[end_column][end_row] == '_':
@@ -540,17 +518,6 @@ class ChessVar:
                 return self.white_capture(start_column, start_row, end_column, end_row)
             else:
                 return False
-                """
-                captured_piece = self._game_board[end_column][end_row]
-                self._white_dict[captured_piece] -= 1
-                if self._white_dict[captured_piece] == 0:
-                    self.set_game_state('BLACK_WON')
-
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'b'
-
-                return True
-                """
 
         else:                        # moving up and right                                       #check column
             if self._game_board[end_column][end_row] == '_':
@@ -577,17 +544,6 @@ class ChessVar:
                 return self.white_capture(start_column, start_row, end_column, end_row)
             else:
                 return False
-                """
-                captured_piece = self._game_board[end_column][end_row]
-                self._white_dict[captured_piece] -= 1
-                if self._white_dict[captured_piece] == 0:
-                    self.set_game_state('BLACK_WON')
-
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'b'
-
-                return True
-                """
 
     def move_black_rook(self, start_coord, end_coord):
         """
@@ -640,17 +596,6 @@ class ChessVar:
                     return self.white_capture(start_column, start_row, end_column, end_row)
                 else:
                     return False
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._white_dict[captured_piece] -= 1
-                    if self._white_dict[captured_piece] == 0:
-                        self.set_game_state('BLACK_WON')
-
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'r'
-
-                    return True
-                    """
                 
             else: #moving down
                 if self._game_board[end_column][end_row] == '_':
@@ -677,17 +622,6 @@ class ChessVar:
                     return self.white_capture(start_column, start_row, end_column, end_row)
                 else:
                     return False
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._white_dict[captured_piece] -= 1
-                    if self._white_dict[captured_piece] == 0:
-                        self.set_game_state('BLACK_WON')
-
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'r'
-
-                    return True
-                    """
         
         else:                   #check column
             if row_result < 0:   #moving left 
@@ -715,17 +649,6 @@ class ChessVar:
                     return self.white_capture(start_column, start_row, end_column, end_row)
                 else:
                     return False
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._white_dict[captured_piece] -= 1
-                    if self._white_dict[captured_piece] == 0:
-                        self.set_game_state('BLACK_WON')
-
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'r'
-
-                    return True
-                    """
                 
             else: #moving right
                 if self._game_board[end_column][end_row] == '_':
@@ -753,18 +676,7 @@ class ChessVar:
                     return self.white_capture(start_column, start_row, end_column, end_row)
                 else:
                     return False
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._white_dict[captured_piece] -= 1
-                    if self._white_dict[captured_piece] == 0:
-                        self.set_game_state('BLACK_WON')
 
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'r'
-
-                    return True
-                    """
-                    
     def move_black_queen(self, start_coord, end_coord):
         """
         Black Queen: 'q', 1
@@ -815,17 +727,6 @@ class ChessVar:
                     return self.white_capture(start_column, start_row, end_column, end_row)
                 else:
                     return False
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._white_dict[captured_piece] -= 1
-                    if self._white_dict[captured_piece] == 0:
-                        self.set_game_state('BLACK_WON')
-
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'q'
-
-                    return True
-                    """
                 
             if column_result > 0 and row_result > 0:   #moving down + right
                 if self._game_board[end_column][end_row] == '_':
@@ -852,17 +753,6 @@ class ChessVar:
                     return self.white_capture(start_column, start_row, end_column, end_row)
                 else:
                     return False 
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._white_dict[captured_piece] -= 1
-                    if self._white_dict[captured_piece] == 0:
-                        self.set_game_state('BLACK_WON')
-
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'q'
-
-                    return True
-                    """
                 
             if column_result < 0 and row_result < 0 : #moving up + left
                 if self._game_board[end_column][end_row] == '_':
@@ -888,17 +778,6 @@ class ChessVar:
                     return self.white_capture(start_column, start_row, end_column, end_row)
                 else:
                     return False
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._white_dict[captured_piece] -= 1
-                    if self._white_dict[captured_piece] == 0:
-                        self.set_game_state('BLACK_WON')
-
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'q'
-
-                    return True
-                    """
 
             else:                        # moving up and right                                       #check column
                 if self._game_board[end_column][end_row] == '_':
@@ -925,17 +804,6 @@ class ChessVar:
                     return self.white_capture(start_column, start_row, end_column, end_row)
                 else:
                     return False
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._white_dict[captured_piece] -= 1
-                    if self._white_dict[captured_piece] == 0:
-                        self.set_game_state('BLACK_WON')
-
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'q'
-
-                    return True
-                    """
                 
         # rook functionality   
         if (row_result == 0 and abs(column_result) > 0) or (abs(row_result) > 0 and column_result == 0): 
@@ -964,17 +832,7 @@ class ChessVar:
                         return self.white_capture(start_column, start_row, end_column, end_row)
                     else:
                         return False
-                        """
-                        captured_piece = self._game_board[end_column][end_row]
-                        self._white_dict[captured_piece] -= 1
-                        if self._white_dict[captured_piece] == 0:
-                            self.set_game_state('BLACK_WON')
 
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'q'
-
-                        return True
-                        """
                 else: #moving down
                     if self._game_board[end_column][end_row] == '_':
                         pos = 1
@@ -1000,18 +858,7 @@ class ChessVar:
                         return self.white_capture(start_column, start_row, end_column, end_row)
                     else:
                         return False
-                        """
-                        captured_piece = self._game_board[end_column][end_row]
-                        self._white_dict[captured_piece] -= 1
-                        if self._white_dict[captured_piece] == 0:
-                            self.set_game_state('BLACK_WON')
-
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'q'
-
-                        return True
-                        """
-                    
+          
             else:
                 if row_result < 0:   #moving left 
                     if self._game_board[end_column][end_row] == '_':
@@ -1038,17 +885,6 @@ class ChessVar:
                         return self.white_capture(start_column, start_row, end_column, end_row)
                     else:
                         return False
-                        """
-                        captured_piece = self._game_board[end_column][end_row]
-                        self._white_dict[captured_piece] -= 1
-                        if self._white_dict[captured_piece] == 0:
-                            self.set_game_state('BLACK_WON')
-
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'q'
-
-                        return True
-                        """
                     
                 else: #moving right
                     if self._game_board[end_column][end_row] == '_':
@@ -1075,18 +911,6 @@ class ChessVar:
                         return self.white_capture(start_column, start_row, end_column, end_row)
                     else:
                         return False
-                        
-                        """
-                        captured_piece = self._game_board[end_column][end_row]
-                        self._white_dict[captured_piece] -= 1
-                        if self._white_dict[captured_piece] == 0:
-                            self.set_game_state('BLACK_WON')
-
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'q'
-
-                        return True
-                        """
         else:
             return False
         
@@ -1138,21 +962,6 @@ class ChessVar:
             return self.white_capture(start_column, start_row, end_column, end_row)
         else:
             return False
-
-            """
-            captured_piece = self._game_board[end_column][end_row]
-            self._white_dict[captured_piece] -= 1
-            if self._white_dict[captured_piece] == 0:
-                self.set_game_state('BLACK_WON')
-
-            self._game_board[start_column][start_row] = '_'
-            self._game_board[end_column][end_row] = 'k'
-
-            return True
-        
-        else:
-            return False
-            """
 
     def move_white_pawn(self, start_coord, end_coord):
         """
@@ -1210,36 +1019,13 @@ class ChessVar:
                     return self.black_capture(start_column, start_row, end_column, end_row)
                 else:
                     return False
-                    """
 
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._black_dict[captured_piece] -= 1
-                    if self._black_dict[captured_piece] == 0:
-                        self.set_game_state('WHITE_WON')
-
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'P'
-
-                    return True
-                    """
         if column_result == -1 and abs(row_result) == 1:
             check_opponent = self._game_board[end_column][end_row].islower()  # capture
             if check_opponent is True:
                 return self.black_capture(start_column, start_row, end_column, end_row)
             else:
                 return False
-
-                """
-                captured_piece = self._game_board[end_column][end_row]
-                self._black_dict[captured_piece] -= 1
-                if self._black_dict[captured_piece] == 0:
-                    self.set_game_state('WHITE_WON')
-
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'P'
-
-                return True
-                """
 
         if column_result == -1 and self._game_board[end_column][end_row] == '_':
             self._game_board[start_column][start_row] = '_'
@@ -1296,21 +1082,6 @@ class ChessVar:
             return self.black_capture(start_column, start_row, end_column, end_row)
         else:
             return False
-
-            """
-            captured_piece = self._game_board[end_column][end_row]
-            self._black_dict[captured_piece] -= 1
-            if self._black_dict[captured_piece] == 0:
-                self.set_game_state('WHITE_WON')
-
-            self._game_board[start_column][start_row] = '_'
-            self._game_board[end_column][end_row] = 'N'
-
-            return True
-        
-        else: 
-            return False
-        """
         
     def move_white_bishop(self, start_coord, end_coord):
         """
@@ -1367,17 +1138,6 @@ class ChessVar:
                 return self.black_capture(start_column, start_row, end_column, end_row)
             else:
                 return False
-                """
-                captured_piece = self._game_board[end_column][end_row]
-                self._black_dict[captured_piece] -= 1
-                if self._black_dict[captured_piece] == 0:
-                    self.set_game_state('WHITE_WON')
-
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'B'
-
-                return True
-                """
             
         if column_result > 0 and row_result > 0:   #moving down + right
             if self._game_board[end_column][end_row] == '_':
@@ -1403,17 +1163,6 @@ class ChessVar:
                 return self.black_capture(start_column, start_row, end_column, end_row)
             else:
                 return False
-                """
-                captured_piece = self._game_board[end_column][end_row]
-                self._black_dict[captured_piece] -= 1
-                if self._black_dict[captured_piece] == 0:
-                    self.set_game_state('WHITE_WON')
-
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'B'
-
-                return True
-                """
             
         if column_result < 0 and row_result < 0 : #moving up + left
             if self._game_board[end_column][end_row] == '_':
@@ -1428,7 +1177,7 @@ class ChessVar:
                 self._game_board[end_column][end_row] = 'B'
                 return True
                 
-            check_opponent = self._game_board[end_column][end_row].isupper()
+            check_opponent = self._game_board[end_column][end_row].islower()
             if check_opponent is True:
                 pos = 1
                 for _ in range(abs(column_result)-1):
@@ -1440,17 +1189,6 @@ class ChessVar:
                 return self.black_capture(start_column, start_row, end_column, end_row)
             else:
                 return False
-                """
-                captured_piece = self._game_board[end_column][end_row]
-                self._black_dict[captured_piece] -= 1
-                if self._black_dict[captured_piece] == 0:
-                    self.set_game_state('WHITE_WON')
-
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'B'
-
-                return True
-                """
 
         else:                        # moving up and right                                       #check column
             if self._game_board[end_column][end_row] == '_':
@@ -1476,17 +1214,6 @@ class ChessVar:
                 return self.black_capture(start_column, start_row, end_column, end_row)
             else:
                 return False
-                """
-                captured_piece = self._game_board[end_column][end_row]
-                self._black_dict[captured_piece] -= 1
-                if self._black_dict[captured_piece] == 0:
-                    self.set_game_state('WHITE_WON')
-
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'B'
-
-                return True
-                """
 
     def move_white_rook(self, start_coord, end_coord):
         """
@@ -1539,17 +1266,6 @@ class ChessVar:
                     return self.black_capture(start_column, start_row, end_column, end_row)
                 else:
                     return False
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._black_dict[captured_piece] -= 1
-                    if self._black_dict[captured_piece] == 0:
-                        self.set_game_state('WHITE_WON')
-
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'R'
-
-                    return True
-                    """
                 
             else: #moving down
                 if self._game_board[end_column][end_row] == '_':
@@ -1575,17 +1291,6 @@ class ChessVar:
                     return self.black_capture(start_column, start_row, end_column, end_row)
                 else:
                     return False
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._black_dict[captured_piece] -= 1
-                    if self._black_dict[captured_piece] == 0:
-                        self.set_game_state('WHITE_WON')
-
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'R'
-
-                    return True
-                    """
     
         else:           #check column
             if row_result < 0:   #moving left 
@@ -1612,17 +1317,6 @@ class ChessVar:
                     return self.black_capture(start_column, start_row, end_column, end_row)
                 else:
                     return False
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._black_dict[captured_piece] -= 1
-                    if self._black_dict[captured_piece] == 0:
-                        self.set_game_state('WHITE_WON')
-
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'R'
-
-                    return True
-                    """
                 
             else: #moving right
                 if self._game_board[end_column][end_row] == '_':
@@ -1648,17 +1342,6 @@ class ChessVar:
                     return self.black_capture(start_column, start_row, end_column, end_row)
                 else:
                     return False
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._black_dict[captured_piece] -= 1
-                    if self._black_dict[captured_piece] == 0:
-                        self.set_game_state('WHITE_WON')
-
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'R'
-
-                    return True
-                    """
 
     def move_white_queen(self, start_coord, end_coord):
         """
@@ -1711,18 +1394,6 @@ class ChessVar:
                 else:
                     return False
                 
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._black_dict[captured_piece] -= 1
-                    if self._black_dict[captured_piece] == 0:
-                        self.set_game_state('WHITE_WON')
-
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'Q'
-
-                    return True
-                    """
-                
             if column_result > 0 and row_result > 0:   #moving down + right
                 if self._game_board[end_column][end_row] == '_':
                     pos = 1
@@ -1748,17 +1419,6 @@ class ChessVar:
                     return self.black_capture(start_column, start_row, end_column, end_row)
                 else:
                     return False
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._black_dict[captured_piece] -= 1
-                    if self._black_dict[captured_piece] == 0:
-                        self.set_game_state('WHITE_WON')
-
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'Q'
-
-                    return True
-                    """
                 
             if column_result < 0 and row_result < 0 : #moving up + left
                 if self._game_board[end_column][end_row] == '_':
@@ -1784,18 +1444,6 @@ class ChessVar:
                     return self.black_capture(start_column, start_row, end_column, end_row)
                 else:
                     return False
-                
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._black_dict[captured_piece] -= 1
-                    if self._black_dict[captured_piece] == 0:
-                        self.set_game_state('WHITE_WON')
-
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'Q'
-
-                    return True
-                    """
 
             else:                        # moving up and right                                       #check column
                 if self._game_board[end_column][end_row] == '_':
@@ -1822,18 +1470,7 @@ class ChessVar:
                     return self.black_capture(start_column, start_row, end_column, end_row)
                 else:
                     return False
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._black_dict[captured_piece] -= 1
-                    if self._black_dict[captured_piece] == 0:
-                        self.set_game_state('WHITE_WON')
-
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'Q'
-
-                    return True
-                    """
-                
+                      
         # rook functionality   
         if (row_result == 0 and abs(column_result) > 0) or (abs(row_result) > 0 and column_result == 0): 
             if row_result == 0:                             # check_row
@@ -1861,17 +1498,6 @@ class ChessVar:
                         return self.black_capture(start_column, start_row, end_column, end_row)
                     else:
                         return False
-                        """
-                        captured_piece = self._game_board[end_column][end_row]
-                        self._black_dict[captured_piece] -= 1
-                        if self._black_dict[captured_piece] == 0:
-                            self.set_game_state('WHITE_WON')
-
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'Q'
-
-                        return True
-                        """
                     
                 else: #moving down
                     if self._game_board[end_column][end_row] == '_':
@@ -1898,17 +1524,6 @@ class ChessVar:
                         return self.black_capture(start_column, start_row, end_column, end_row)
                     else:
                         return False
-                        """
-                        captured_piece = self._game_board[end_column][end_row]
-                        self._black_dict[captured_piece] -= 1
-                        if self._black_dict[captured_piece] == 0:
-                            self.set_game_state('WHITE_WON')
-
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'Q'
-
-                        return True
-                        """
                     
             else:
                 if row_result < 0:   #moving left 
@@ -1936,19 +1551,7 @@ class ChessVar:
                         return self.black_capture(start_column, start_row, end_column, end_row)
                     else:
                         return False
-                    
-                        """
-                        captured_piece = self._game_board[end_column][end_row]
-                        self._black_dict[captured_piece] -= 1
-                        if self._black_dict[captured_piece] == 0:
-                            self.set_game_state('WHITE_WON')
 
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'Q'
-
-                        return True
-                        """
-                    
                 else: #moving right
                     if self._game_board[end_column][end_row] == '_':
                         pos = 1
@@ -1974,17 +1577,6 @@ class ChessVar:
                         return self.black_capture(start_column, start_row, end_column, end_row)
                     else:
                         return False
-                        """
-                        captured_piece = self._game_board[end_column][end_row]
-                        self._black_dict[captured_piece] -= 1
-                        if self._black_dict[captured_piece] == 0:
-                            self.set_game_state('WHITE_WON')
-
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'Q'
-
-                        return True
-                        """
         else:
             return False
 
@@ -2018,11 +1610,13 @@ class ChessVar:
             return False
         if abs(row_result) > 1: 
             return False
+
         
         if self._game_board[end_column][end_row] == '_':            # up, down
             if abs(column_result) == 1 and row_result == 0:
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'K'
+                self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row], self._game_board[start_column][start_row]
+                #self._game_board[start_column][start_row] = '_'
+                #self._game_board[end_column][end_row] = 'K'
                 return True
             if column_result == 0 and abs(row_result) == 1:         # left, right
                 self._game_board[start_column][start_row] = '_'
@@ -2038,21 +1632,575 @@ class ChessVar:
             return self.black_capture(start_column, start_row, end_column, end_row)
         else:
             return False
-            """
-            captured_piece = self._game_board[end_column][end_row]
-            self._black_dict[captured_piece] -= 1
-            if self._black_dict[captured_piece] == 0:
-                self.set_game_state('WHITE_WON')
 
-            self._game_board[start_column][start_row] = '_'
-            self._game_board[end_column][end_row] = 'K'
+    def move_bishop(self, start_coord, end_coord):
+        """
+        Generalized method to move bishop 
+        """
+        start_row, start_column = start_coord
+        end_row, end_column = end_coord
 
-            return True
-            
+        row_result = end_row - start_row
+        column_result = end_column - start_column
+
+        if abs(column_result) == 0 and abs(row_result) != 0: #vert/horz check
+            return False
+        if abs(column_result) != 0 and abs(row_result) == 0:
+            return False
         
+        if abs(column_result) != abs(row_result):
+            return False
+
+        #if column_result > 0:                             
+        if column_result > 0 and row_result < 0:   #moving down + left
+            if self._game_board[end_column][end_row] == '_':
+                pos = 1
+                for _ in range(abs(column_result)):
+                    if self._game_board[start_column + pos][start_row - pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+            
+                self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row],self._game_board[start_column][start_row]
+                return True
+            
+            end_square = self._game_board[end_column][end_row]
+            if end_square != '_':
+                pos = 1
+                for _ in range(abs(row_result)-1):
+                    if self._game_board[start_column + pos][start_row - pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+                    
+                if self.get_move_state() == 'WHITE':
+                    return self.black_capture(start_column, start_row, end_column, end_row)
+                if self.get_move_state() == 'BLACK':
+                    return self.white_capture(start_column, start_row, end_column, end_row)
+                else:
+                    return False 
+            
+        if column_result > 0 and row_result > 0:   #moving down + right
+            if self._game_board[end_column][end_row] == '_':
+                pos = 1
+                for _ in range(abs(column_result)):
+                    if self._game_board[start_column + pos][start_row + pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+            
+                self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row],self._game_board[start_column][start_row]
+                return True
+            
+            end_square = self._game_board[end_column][end_row]
+            if end_square != '_':
+                pos = 1
+                for _ in range(abs(row_result)-1):
+                    if self._game_board[start_column + pos][start_row + pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+                    
+                if self.get_move_state() == 'WHITE':
+                    return self.black_capture(start_column, start_row, end_column, end_row)
+                if self.get_move_state() == 'BLACK':
+                    return self.white_capture(start_column, start_row, end_column, end_row)
+                else:
+                    return False   
+            
+        if column_result < 0 and row_result < 0 : #moving up + left
+            if self._game_board[end_column][end_row] == '_':
+                pos = 1
+                for _ in range(abs(column_result)-1):
+                    if self._game_board[start_column - pos][start_row - pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+            
+                self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row],self._game_board[start_column][start_row]
+                return True
+            
+            end_square = self._game_board[end_column][end_row]
+            if end_square != '_':
+                pos = 1
+                for _ in range(abs(row_result)-1):
+                    if self._game_board[start_column - pos][start_row - pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+                    
+                if self.get_move_state() == 'WHITE':
+                    return self.black_capture(start_column, start_row, end_column, end_row)
+                if self.get_move_state() == 'BLACK':
+                    return self.white_capture(start_column, start_row, end_column, end_row)
+                else:
+                    return False  
+                
+        else:                        # moving up and right                                       #check column
+            if self._game_board[end_column][end_row] == '_':
+                pos = 1
+                for _ in range(abs(row_result)):
+                    if self._game_board[start_column - pos][start_row + pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+            
+                self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row],self._game_board[start_column][start_row]
+                return True
+            
+            end_square = self._game_board[end_column][end_row]
+            if end_square != '_':
+                pos = 1
+                for _ in range(abs(row_result)-1):
+                    if self._game_board[start_column - pos][start_row + pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+                    
+                if self.get_move_state() == 'WHITE':
+                    return self.black_capture(start_column, start_row, end_column, end_row)
+                if self.get_move_state() == 'BLACK':
+                    return self.white_capture(start_column, start_row, end_column, end_row)
+                else:
+                    return False 
+
+    def move_knight(self, start_coord, end_coord):
+        """
+        Generalized method to move a knight 
+        """
+        start_row, start_column = start_coord
+        end_row, end_column = end_coord
+
+        row_result = end_row - start_row
+        column_result = end_column - start_column
+
+        if abs(column_result) > 2 or abs(row_result) > 2:
+            return False
+        
+        if self._game_board[end_column][end_row] == '_':
+            if abs(column_result) == 1 and abs(row_result) == 2:
+                self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row],self._game_board[start_column][start_row]
+                return True
+            
+            if abs(column_result) == 2 and abs(row_result) == 1:
+                self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row],self._game_board[start_column][start_row]
+                return True
+            else:
+                return False
+        
+        end_square = self._game_board[end_column][end_row]
+        if end_square != '_':
+            if self.get_move_state() == 'WHITE':
+                return self.black_capture(start_column, start_row, end_column, end_row)
+            if self.get_move_state() == 'BLACK':
+                return self.white_capture(start_column, start_row, end_column, end_row)
+            else:
+                return False
+
+    def move_rook(self, start_coord, end_coord):
+        """
+        Generalized method to move rook
+        """
+        start_row, start_column = start_coord
+        end_row, end_column = end_coord
+
+        row_result = end_row - start_row
+        column_result = end_column - start_column
+
+        if abs(column_result) > 0 and abs(row_result) > 0: #diagonal check
+            return False
+            
+        if row_result == 0:                             # check_row
+            if column_result < 0:   #moving up
+                if self._game_board[end_column][end_row] == '_':
+                    pos = 1
+                    for _ in range(abs(column_result)):
+                        if self._game_board[start_column - pos][start_row] == '_':
+                            pos += 1
+                        else:
+                            return False
+                
+                    self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row],self._game_board[start_column][start_row]
+                    return True
+                
+                end_square = self._game_board[end_column][end_row]
+                if end_square != '_':
+                    pos = 1
+                    for _ in range(abs(row_result)-1):
+                        if self._game_board[start_column - pos][start_row] == '_':
+                            pos += 1
+                        else:
+                            return False
+                        
+                    if self.get_move_state() == 'WHITE':
+                        return self.black_capture(start_column, start_row, end_column, end_row)
+                    if self.get_move_state() == 'BLACK':
+                        return self.white_capture(start_column, start_row, end_column, end_row)
+                    else:
+                        return False 
+                
+            else: #moving down
+                if self._game_board[end_column][end_row] == '_':
+                    pos = 1
+                    for _ in range(abs(column_result)-1):
+                        if self._game_board[start_column + pos][start_row] == '_':
+                            pos += 1
+                        else:
+                            return False
+                
+                    self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row],self._game_board[start_column][start_row]
+                    return True
+                
+                end_square = self._game_board[end_column][end_row]
+                if end_square != '_':
+                    pos = 1
+                    for _ in range(abs(row_result)-1):
+                        if self._game_board[start_column + pos][start_row] == '_':
+                            pos += 1
+                        else:
+                            return False
+                        
+                    if self.get_move_state() == 'WHITE':
+                        return self.black_capture(start_column, start_row, end_column, end_row)
+                    if self.get_move_state() == 'BLACK':
+                        return self.white_capture(start_column, start_row, end_column, end_row)
+                    else:
+                        return False   
+    
+        else:           #check column
+            if row_result < 0:   #moving left 
+                if self._game_board[end_column][end_row] == '_':
+                    pos = 1
+                    for _ in range(abs(row_result)):
+                        if self._game_board[start_column][start_row - pos] == '_':
+                            pos += 1
+                        else:
+                            return False
+                
+                    self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row],self._game_board[start_column][start_row]
+                    return True
+                
+                end_square = self._game_board[end_column][end_row]
+                if end_square != '_':
+                    pos = 1
+                    for _ in range(abs(row_result)-1):
+                        if self._game_board[start_column][start_row - pos] == '_':
+                            pos += 1
+                        else:
+                            return False
+                        
+                    if self.get_move_state() == 'WHITE':
+                        return self.black_capture(start_column, start_row, end_column, end_row)
+                    if self.get_move_state() == 'BLACK':
+                        return self.white_capture(start_column, start_row, end_column, end_row)
+                    else:
+                        return False
+                    
+            else: #moving right
+                if self._game_board[end_column][end_row] == '_':
+                    pos = 1
+                    for _ in range(abs(row_result)-1):
+                        if self._game_board[start_column][start_row + pos] == '_':
+                            pos += 1
+                        else:
+                            return False
+                
+                    self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row],self._game_board[start_column][start_row]
+                    return True
+                
+
+                end_square = self._game_board[end_column][end_row]
+                if end_square != '_':
+                    pos = 1
+                    for _ in range(abs(row_result)-1):
+                        if self._game_board[start_column][start_row + pos] == '_':
+                            pos += 1
+                        else:
+                            return False
+                        
+                    if self.get_move_state() == 'WHITE':
+                        return self.black_capture(start_column, start_row, end_column, end_row)
+                    if self.get_move_state() == 'BLACK':
+                        return self.white_capture(start_column, start_row, end_column, end_row)
+                    else:
+                        return False
+
+    def move_queen(self, start_coord, end_coord):
+        """
+        Generalized method to move queen
+        """
+        start_row, start_column = start_coord
+        end_row, end_column = end_coord
+
+        row_result = end_row - start_row
+        column_result = end_column - start_column
+        
+        if abs(column_result) == abs(row_result): #bishop functionality 
+            if column_result > 0 and row_result < 0:   #moving down + left
+                if self._game_board[end_column][end_row] == '_':
+                    pos = 1
+                    for _ in range(abs(column_result)):
+                        if self._game_board[start_column + pos][start_row - pos] == '_':
+                            pos += 1
+                        else:
+                            return False
+                
+                    self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row],self._game_board[start_column][start_row]
+                    return True
+                
+                end_square = self._game_board[end_column][end_row]
+                if end_square != '_':
+                    pos = 1
+                    for _ in range(abs(row_result)-1):
+                        if self._game_board[start_column + pos][start_row - pos] == '_':
+                            pos += 1
+                        else:
+                            return False
+                        
+                    if self.get_move_state() == 'WHITE':
+                        return self.black_capture(start_column, start_row, end_column, end_row)
+                    if self.get_move_state() == 'BLACK':
+                        return self.white_capture(start_column, start_row, end_column, end_row)
+                    else:
+                        return False    
+                
+            if column_result > 0 and row_result > 0:   #moving down + right
+                if self._game_board[end_column][end_row] == '_':
+                    pos = 1
+                    for _ in range(abs(column_result)):
+                        if self._game_board[start_column + pos][start_row + pos] == '_':
+                            pos += 1
+                        else:
+                            return False
+                
+                    self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row],self._game_board[start_column][start_row]
+                    return True
+                
+                end_square = self._game_board[end_column][end_row]
+                if end_square != '_':
+                    pos = 1
+                    for _ in range(abs(row_result)-1):
+                        if self._game_board[start_column + pos][start_row + pos] == '_':
+                            pos += 1
+                        else:
+                            return False
+                        
+                    if self.get_move_state() == 'WHITE':
+                        return self.black_capture(start_column, start_row, end_column, end_row)
+                    if self.get_move_state() == 'BLACK':
+                        return self.white_capture(start_column, start_row, end_column, end_row)
+                    else:
+                        return False    
+                
+            if column_result < 0 and row_result < 0 : #moving up + left
+                if self._game_board[end_column][end_row] == '_':
+                    pos = 1
+                    for _ in range(abs(column_result)-1):
+                        if self._game_board[start_column - pos][start_row - pos] == '_':
+                            pos += 1
+                        else:
+                            return False
+                
+                    self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row],self._game_board[start_column][start_row]
+                    return True
+                
+                end_square = self._game_board[end_column][end_row]
+                if end_square != '_':
+                    pos = 1
+                    for _ in range(abs(row_result)-1):
+                        if self._game_board[start_column - pos][start_row - pos] == '_':
+                            pos += 1
+                        else:
+                            return False
+                        
+                    if self.get_move_state() == 'WHITE':
+                        return self.black_capture(start_column, start_row, end_column, end_row)
+                    if self.get_move_state() == 'BLACK':
+                        return self.white_capture(start_column, start_row, end_column, end_row)
+                    else:
+                        return False    
+
+            else:                        # moving up and right                                       #check column
+                if self._game_board[end_column][end_row] == '_':
+                    pos = 1
+                    for _ in range(abs(row_result)):
+                        if self._game_board[start_column - pos][start_row + pos] == '_':
+                            pos += 1
+                        else:
+                            return False
+                
+                    self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row],self._game_board[start_column][start_row]
+                    return True
+            
+                end_square = self._game_board[end_column][end_row]
+                if end_square != '_':
+                    pos = 1
+                    for _ in range(abs(row_result)-1):
+                        if self._game_board[start_column - pos][start_row + pos] == '_':
+                            pos += 1
+                        else:
+                            return False
+                        
+                    if self.get_move_state() == 'WHITE':
+                        return self.black_capture(start_column, start_row, end_column, end_row)
+                    if self.get_move_state() == 'BLACK':
+                        return self.white_capture(start_column, start_row, end_column, end_row)
+                    else:
+                        return False 
+                      
+        # rook functionality   
+        if (row_result == 0 and abs(column_result) > 0) or (abs(row_result) > 0 and column_result == 0): 
+            if row_result == 0:                             # check_row
+                if column_result < 0:   #moving up
+                    if self._game_board[end_column][end_row] == '_':
+                        pos = 1
+                        for _ in range(abs(column_result)):
+                            if self._game_board[start_column - pos][start_row] == '_':
+                                pos += 1
+                            else:
+                                return False
+                    
+                        self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row],self._game_board[start_column][start_row]
+                        return True
+                    
+                    end_square = self._game_board[end_column][end_row]
+                    if end_square != '_':
+                        pos = 1
+                        for _ in range(abs(row_result)-1):
+                            if self._game_board[start_column - pos][start_row] == '_':
+                                pos += 1
+                            else:
+                                return False
+                            
+                        if self.get_move_state() == 'WHITE':
+                            return self.black_capture(start_column, start_row, end_column, end_row)
+                        if self.get_move_state() == 'BLACK':
+                            return self.white_capture(start_column, start_row, end_column, end_row)
+                        else:
+                            return False 
+                    
+                else: #moving down
+                    if self._game_board[end_column][end_row] == '_':
+                        pos = 1
+                        for _ in range(abs(column_result)-1):
+                            if self._game_board[start_column + pos][start_row] == '_':
+                                pos += 1
+                            else:
+                                return False
+                    
+                        self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row],self._game_board[start_column][start_row]
+                        return True
+                    
+                    end_square = self._game_board[end_column][end_row]
+                    if end_square != '_':
+                        pos = 1
+                        for _ in range(abs(row_result)-1):
+                            if self._game_board[start_column + pos][start_row] == '_':
+                                pos += 1
+                            else:
+                                return False
+                            
+                        if self.get_move_state() == 'WHITE':
+                            return self.black_capture(start_column, start_row, end_column, end_row)
+                        if self.get_move_state() == 'BLACK':
+                            return self.white_capture(start_column, start_row, end_column, end_row)
+                        else:
+                            return False 
+                            
+            else:
+                if row_result < 0:   #moving left 
+                    if self._game_board[end_column][end_row] == '_':
+                        pos = 1
+                        for _ in range(abs(row_result)):
+                            if self._game_board[start_column][start_row - pos] == '_':
+                                pos += 1
+                            else:
+                                return False
+                    
+                        self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row],self._game_board[start_column][start_row]
+                        return True
+                    
+                    end_square = self._game_board[end_column][end_row]
+                    if end_square != '_':
+                        pos = 1
+                        for _ in range(abs(row_result)-1):
+                            if self._game_board[start_column][start_row - pos] == '_':
+                                pos += 1
+                            else:
+                                return False
+                            
+                        if self.get_move_state() == 'WHITE':
+                            return self.black_capture(start_column, start_row, end_column, end_row)
+                        if self.get_move_state() == 'BLACK':
+                            return self.white_capture(start_column, start_row, end_column, end_row)
+                        else:
+                            return False
+                        
+                else: #moving right
+                    if self._game_board[end_column][end_row] == '_':
+                        pos = 1
+                        for _ in range(abs(row_result)-1):
+                            if self._game_board[start_column][start_row + pos] == '_':
+                                pos += 1
+                            else:
+                                return False
+                    
+                        self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row],self._game_board[start_column][start_row]
+                        return True
+                        
+                    end_square = self._game_board[end_column][end_row]
+                    if end_square != '_':
+                        pos = 1
+                        for _ in range(abs(row_result)-1):
+                            if self._game_board[start_column][start_row + pos] == '_':
+                                pos += 1
+                            else:
+                                return False
+                            
+                        if self.get_move_state() == 'WHITE':
+                            return self.black_capture(start_column, start_row, end_column, end_row)
+                        if self.get_move_state() == 'BLACK':
+                            return self.white_capture(start_column, start_row, end_column, end_row)
+                        else:
+                            return False
         else:
             return False
-            """
+
+    def move_king(self, start_coord, end_coord):
+        """
+        Generalized method to move king
+        """
+        start_row, start_column = start_coord
+        end_row, end_column = end_coord
+
+        row_result = end_row - start_row
+        column_result = end_column - start_column
+
+        if abs(column_result) > 1:
+            return False
+        if abs(row_result) > 1: 
+            return False
+
+        if self._game_board[end_column][end_row] == '_':            # up, down
+            if abs(column_result) == 1 and row_result == 0:
+                self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row], self._game_board[start_column][start_row]
+                return True
+            if column_result == 0 and abs(row_result) == 1:         # left, right
+                self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row], self._game_board[start_column][start_row]
+                return True
+            if abs(column_result) == 1 and abs(row_result) == 1:         # diagonal 
+                self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row], self._game_board[start_column][start_row]
+                return True
+
+        end_square = self._game_board[end_column][end_row]
+        if end_square != '_':
+            if self.get_move_state() == 'WHITE':
+                return self.black_capture(start_column, start_row, end_column, end_row)
+            if self.get_move_state() == 'BLACK':
+                return self.white_capture(start_column, start_row, end_column, end_row)
+            else:
+                return False
+
 
 def main():
 
@@ -2068,16 +2216,16 @@ def main():
     
     cv = ChessVar()
 
-    print(cv.make_move('d5', 'd7'))
+    print(cv.make_move('b1', 'c3'))
     #print(cv.get_game_state())
 
-   # print(cv.make_move('d4', 'a7'))
+    print(cv.make_move('b8', 'a6'))
 
-    #print(cv.make_move('e2', 'e4'))
+    #print(cv.make_move('c3', 'e2'))
 
-    #print(cv.make_move('e7', 'e6'))
+    #print(cv.make_move('a5', 'a4'))
 
-    #print(cv.make_move('c1', 'g5'))
+   # print(cv.make_move('e3', 'd4'))
 
     #print(cv.make_move('g8', 'f6'))
 
