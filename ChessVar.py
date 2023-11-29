@@ -10,14 +10,14 @@ class ChessVar:
         self._game_state = 'UNFINISHED'  # 'UNFINISHED', 'WHITE_WON', 'BLACK_WON'
         self._move_state = 'WHITE'  # 'BLACK'
         self._board_size = 8
-        self._game_board = [['r', 'n', 'b', 'q', '_', 'b', 'n', 'r'],
-                            ['_', 'P', 'p', '_', '_', '_', 'p', '_'],
-                            ['_', '_', '_', '_', 'p', '_', 'N', '_'],
-                            ['_', '_', '_', 'q', 'B', 'p', '_', '_'],
-                            ['_', 'R', '_', '_', '_', '_', 'R', '_'],
-                            ['_', '_', 'r', 'b', '_', 'b', '_', 'P'],
-                            ['_', '_', 'P', '_', 'K', '_', 'P', '_'],
-                            ['r', 'N', 'B', 'q', '_', '_', '_', 'R']]  
+        self._game_board = [['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+                            ['p', 'p', 'p', 'p', '_', 'p', 'p', 'p'],
+                            ['_', '_', '_', '_', '_', '_', '_', '_'],
+                            ['_', '_', '_', '_', 'p', '_', '_', '_'],
+                            ['_', '_', '_', '_', 'P', '_', '_', '_'],
+                            ['_', '_', '_', '_', '_', '_', '_', '_'],
+                            ['P', 'P', 'P', 'P', '_', 'P', 'P', 'P'],
+                            ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]  
 
         self._white_dict = {'K': 1, 'Q': 1, 'R': 2, 'B': 2, 'N': 2, 'P': 8}
         self._black_dict = {'k': 1, 'q': 1, 'r': 2, 'b': 2, 'n': 2, 'p': 8}
@@ -274,7 +274,7 @@ class ChessVar:
             else:
                 return False
 
-        if column_result == 1 and self._game_board[end_row][end_column] == '_':
+        if column_result == 1 and self._game_board[end_column][end_row] == '_':
             self._game_board[start_column][start_row] = '_'
             self._game_board[end_column][end_row] = 'p'
             return True
@@ -1025,7 +1025,7 @@ class ChessVar:
 
                 return True
 
-        if column_result == -1 and self._game_board[end_row][end_column] == '_':
+        if column_result == -1 and self._game_board[end_column][end_row] == '_':
             self._game_board[start_column][start_row] = '_'
             self._game_board[end_column][end_row] = 'P'
             return True
@@ -1710,7 +1710,7 @@ def main():
     
     cv = ChessVar()
     #print(cv.convert_algebraic('b8'))
-    print(cv.make_move('c2', 'c3'))
+    print(cv.make_move('e4', 'e5'))
     print(cv.get_game_state())
 
     #print(cv.make_move('f5', 'g6'))
