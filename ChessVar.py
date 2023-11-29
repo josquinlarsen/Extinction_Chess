@@ -12,11 +12,11 @@ class ChessVar:
         self._board_size = 8
         self._game_board = [['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
                             ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
-                            ['b', '_', 'b', '_', 'B', '_', 'B', '_'],
-                            ['_', '_', 'b', 'b', 'b', '_', '_', '_'],
-                            ['_', 'N', 'b', 'K', 'b', 'N', '_', '_'],
-                            ['_', '_', 'b', 'b', 'b', '_', '_', 'B'],
-                            ['b', 'P', 'b', 'P', 'B', 'P', 'B', 'P'],
+                            ['_', '_', 'p', 'R', 'r', '_', '_', '_'],
+                            ['_', '_', 'p', 'b', 'n', '_', '_', '_'],
+                            ['_', '_', 'P', 'P', 'P', '_', '_', '_'],
+                            ['_', '_', 'P', 'K', 'P', '_', '_', '_'],
+                            ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
                             ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]  
 
         self._white_dict = {'K': 1, 'Q': 1, 'R': 2, 'B': 2, 'N': 2, 'P': 8}
@@ -368,8 +368,7 @@ class ChessVar:
         
         if abs(column_result) != abs(row_result):
             return False
-
-        #if column_result > 0:                             
+                           
         check_black = self._game_board[end_column][end_row].islower()  
         if check_black is True:
             return False
@@ -754,6 +753,7 @@ class ChessVar:
                     self._game_board[end_column][end_row] = 'q'
 
                     return True
+                
             if column_result < 0 and row_result < 0 : #moving up + left
                 if self._game_board[end_column][end_row] == '_':
                     pos = 1
@@ -881,6 +881,7 @@ class ChessVar:
                         self._game_board[end_column][end_row] = 'q'
 
                         return True
+                    
             else:
                 if row_result < 0:   #moving left 
                     if self._game_board[end_column][end_row] == '_':
@@ -894,6 +895,7 @@ class ChessVar:
                         self._game_board[start_column][start_row] = '_'
                         self._game_board[end_column][end_row] = 'q'
                         return True
+                    
                     check_opponent = self._game_board[end_column][end_row].isupper()
                     if check_opponent is True:
                         pos = 1
@@ -912,6 +914,7 @@ class ChessVar:
                         self._game_board[end_column][end_row] = 'q'
 
                         return True
+                    
                 else: #moving right
                     if self._game_board[end_column][end_row] == '_':
                         pos = 1
@@ -1000,6 +1003,7 @@ class ChessVar:
             self._game_board[end_column][end_row] = 'k'
 
             return True
+        
         else:
             return False
 
@@ -1085,6 +1089,7 @@ class ChessVar:
             self._game_board[start_column][start_row] = '_'
             self._game_board[end_column][end_row] = 'P'
             return True
+        
         else:
             return False
 
@@ -1132,15 +1137,15 @@ class ChessVar:
         
         check_opponent = self._game_board[end_column][end_row].islower()
         if check_opponent is True:
-                captured_piece = self._game_board[end_column][end_row]
-                self._black_dict[captured_piece] -= 1
-                if self._black_dict[captured_piece] == 0:
-                    self.set_game_state('WHITE_WON')
+            captured_piece = self._game_board[end_column][end_row]
+            self._black_dict[captured_piece] -= 1
+            if self._black_dict[captured_piece] == 0:
+                self.set_game_state('WHITE_WON')
 
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'N'
+            self._game_board[start_column][start_row] = '_'
+            self._game_board[end_column][end_row] = 'N'
 
-                return True
+            return True
         
         else: 
             return False
@@ -1192,6 +1197,7 @@ class ChessVar:
                     self._game_board[start_column][start_row] = '_'
                     self._game_board[end_column][end_row] = 'B'
                     return True
+                
                 check_opponent = self._game_board[end_column][end_row].islower()
                 if check_opponent is True:
                     pos = 1
@@ -1223,6 +1229,7 @@ class ChessVar:
                     self._game_board[start_column][start_row] = '_'
                     self._game_board[end_column][end_row] = 'B'
                     return True
+                
                 check_opponent = self._game_board[end_column][end_row].islower()
                 if check_opponent is True:
                     pos = 1
@@ -1241,6 +1248,7 @@ class ChessVar:
                     self._game_board[end_column][end_row] = 'B'
 
                     return True
+                
             if column_result < 0 and row_result < 0 : #moving up + left
                 if self._game_board[end_column][end_row] == '_':
                     pos = 1
@@ -1285,6 +1293,7 @@ class ChessVar:
                     self._game_board[start_column][start_row] = '_'
                     self._game_board[end_column][end_row] = 'B'
                     return True
+                
                 check_opponent = self._game_board[end_column][end_row].islower()
                 if check_opponent is True:
                     pos = 1
@@ -1365,6 +1374,7 @@ class ChessVar:
                         self._game_board[end_column][end_row] = 'R'
 
                         return True
+                    
                 else: #moving down
                     if self._game_board[end_column][end_row] == '_':
                         pos = 1
@@ -1414,6 +1424,7 @@ class ChessVar:
                         self._game_board[start_column][start_row] = '_'
                         self._game_board[end_column][end_row] = 'R'
                         return True
+                    
                     check_opponent = self._game_board[end_column][end_row].islower()
                     if check_opponent is True:
                         pos = 1
@@ -1432,6 +1443,7 @@ class ChessVar:
                         self._game_board[end_column][end_row] = 'R'
 
                         return True
+                    
                 else: #moving right
                     if self._game_board[end_column][end_row] == '_':
                         pos = 1
@@ -1554,6 +1566,7 @@ class ChessVar:
                     self._game_board[end_column][end_row] = 'Q'
 
                     return True
+                
             if column_result < 0 and row_result < 0 : #moving up + left
                 if self._game_board[end_column][end_row] == '_':
                     pos = 1
@@ -1598,6 +1611,7 @@ class ChessVar:
                     self._game_board[start_column][start_row] = '_'
                     self._game_board[end_column][end_row] = 'Q'
                     return True
+                
                 check_opponent = self._game_board[end_column][end_row].islower()
                 if check_opponent is True:
                     pos = 1
@@ -1650,6 +1664,7 @@ class ChessVar:
                         self._game_board[end_column][end_row] = 'Q'
 
                         return True
+                    
                 else: #moving down
                     if self._game_board[end_column][end_row] == '_':
                         pos = 1
@@ -1681,6 +1696,7 @@ class ChessVar:
                         self._game_board[end_column][end_row] = 'Q'
 
                         return True
+                    
             else:
                 if row_result < 0:   #moving left 
                     if self._game_board[end_column][end_row] == '_':
@@ -1808,7 +1824,6 @@ class ChessVar:
         else:
             return False
 
-
 def main():
 
     initial_board =[
@@ -1823,10 +1838,10 @@ def main():
     
     cv = ChessVar()
     #print(cv.convert_algebraic('b8'))
-    print(cv.make_move('d4', 'b2'))
+    print(cv.make_move('d6', 'd5'))
     print(cv.get_game_state())
 
- #   print(cv.make_move('f6', 'e4'))
+   # print(cv.make_move('d3', 'a3'))
 
     #print(cv.make_move('a1', 'a3'))
 
