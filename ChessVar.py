@@ -12,8 +12,8 @@ class ChessVar:
         self._game_board = [['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
                             ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
                             ['_', '_', '_', '_', '_', '_', '_', '_'],
-                            ['_', '_', '_', '_', '_', '_', '_', '_'],
-                            ['_', '_', '_', '_', '_', '_', '_', '_'],
+                            ['_', '_', '_', 'R', '_', '_', '_', '_'],
+                            ['_', '_', '_', 'b', '_', '_', '_', '_'],
                             ['_', '_', '_', '_', '_', '_', '_', '_'],
                             ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
                             ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]  
@@ -104,6 +104,7 @@ class ChessVar:
 
             if start_square == '_':  # empty square
                 return False
+            
             if start_square.islower() is True:  # trying to move black piece
                 return False
             
@@ -112,7 +113,7 @@ class ChessVar:
                 return False
 
             valid_move_white = self.check_white_move(start_coord, end_coord)
-            if valid_move_white is False:
+            if valid_move_white is False:  #set True ? 
                 return False
             
             self.set_move_state('BLACK')
@@ -120,6 +121,7 @@ class ChessVar:
             return True
 
         if self._move_state == 'BLACK':
+
             if start_square == '_': # empty square
                 return False
             
@@ -131,7 +133,7 @@ class ChessVar:
                 return False
             
             valid_move_black = self.check_black_move(start_coord, end_coord) 
-            if valid_move_black is False:
+            if valid_move_black is False: #set to True?
                 return False
             
             self.set_move_state('WHITE')
@@ -436,156 +438,156 @@ class ChessVar:
         if abs(column_result) != abs(row_result):
             return False
                            
-        check_black = self._game_board[end_column][end_row].islower()  #remove
-        if check_black is True:
-            return False
-        else:
-            if column_result > 0 and row_result < 0:   #moving down + left
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(column_result)):
-                        if self._game_board[start_column + pos][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'b'
-                    return True
-                check_opponent = self._game_board[end_column][end_row].isupper()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column + pos][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                        
-                    return self.white_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-                        
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._white_dict[captured_piece] -= 1
-                    if self._white_dict[captured_piece] == 0:
-                        self.set_game_state('BLACK_WON')
-
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'b'
-
-                    return True
-                    """
-                
-            if column_result > 0 and row_result > 0:   #moving down + right
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(column_result)):
-                        if self._game_board[start_column + pos][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'b'
-                    return True
-                
-                check_opponent = self._game_board[end_column][end_row].isupper()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column + pos][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-
-                        return self.white_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._white_dict[captured_piece] -= 1
-                    if self._white_dict[captured_piece] == 0:
-                        self.set_game_state('BLACK_WON')
-
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'b'
-
-                    return True
-                    """
-
-            if column_result < 0 and row_result < 0 : #moving up + left
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column - pos][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'b'
-                    return True
+        #check_black = self._game_board[end_column][end_row].islower()  #remove
+        #if check_black is True:
+        #    return False # if needed, tab eveything below
+        
+        if column_result > 0 and row_result < 0:   #moving down + left
+            if self._game_board[end_column][end_row] == '_':
+                pos = 1
+                for _ in range(abs(column_result)):
+                    if self._game_board[start_column + pos][start_row - pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+            
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'b'
+                return True
+            check_opponent = self._game_board[end_column][end_row].isupper()
+            if check_opponent is True:
+                pos = 1
+                for _ in range(abs(column_result)-1):
+                    if self._game_board[start_column + pos][start_row - pos] == '_':
+                        pos += 1
+                    else:
+                        return False
                     
-                check_opponent = self._game_board[end_column][end_row].isupper()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column - pos][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                    return self.white_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._white_dict[captured_piece] -= 1
-                    if self._white_dict[captured_piece] == 0:
-                        self.set_game_state('BLACK_WON')
+                return self.white_capture(start_column, start_row, end_column, end_row)
+            else:
+                return False
+                    
+                """
+                captured_piece = self._game_board[end_column][end_row]
+                self._white_dict[captured_piece] -= 1
+                if self._white_dict[captured_piece] == 0:
+                    self.set_game_state('BLACK_WON')
 
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'b'
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'b'
 
-                    return True
-                    """
+                return True
+                """
+            
+        if column_result > 0 and row_result > 0:   #moving down + right
+            if self._game_board[end_column][end_row] == '_':
+                pos = 1
+                for _ in range(abs(column_result)):
+                    if self._game_board[start_column + pos][start_row + pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+            
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'b'
+                return True
+            
+            check_opponent = self._game_board[end_column][end_row].isupper()
+            if check_opponent is True:
+                pos = 1
+                for _ in range(abs(column_result)-1):
+                    if self._game_board[start_column + pos][start_row + pos] == '_':
+                        pos += 1
+                    else:
+                        return False
 
-            else:                        # moving up and right                                       #check column
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(row_result)):
-                        if self._game_board[start_column - pos][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
+                return self.white_capture(start_column, start_row, end_column, end_row)
+            else:
+                return False
+                """
+                captured_piece = self._game_board[end_column][end_row]
+                self._white_dict[captured_piece] -= 1
+                if self._white_dict[captured_piece] == 0:
+                    self.set_game_state('BLACK_WON')
+
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'b'
+
+                return True
+                """
+
+        if column_result < 0 and row_result < 0 : #moving up + left
+            if self._game_board[end_column][end_row] == '_':
+                pos = 1
+                for _ in range(abs(column_result)-1):
+                    if self._game_board[start_column - pos][start_row - pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+            
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'b'
+                return True
                 
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'b'
-                    return True
-                
-                check_opponent = self._game_board[end_column][end_row].isupper()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(row_result)-1):
-                        if self._game_board[start_column - pos][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                        
-                    return self.white_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._white_dict[captured_piece] -= 1
-                    if self._white_dict[captured_piece] == 0:
-                        self.set_game_state('BLACK_WON')
+            check_opponent = self._game_board[end_column][end_row].isupper()
+            if check_opponent is True:
+                pos = 1
+                for _ in range(abs(column_result)-1):
+                    if self._game_board[start_column - pos][start_row - pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+                return self.white_capture(start_column, start_row, end_column, end_row)
+            else:
+                return False
+                """
+                captured_piece = self._game_board[end_column][end_row]
+                self._white_dict[captured_piece] -= 1
+                if self._white_dict[captured_piece] == 0:
+                    self.set_game_state('BLACK_WON')
 
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'b'
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'b'
 
-                    return True
-                    """
+                return True
+                """
+
+        else:                        # moving up and right                                       #check column
+            if self._game_board[end_column][end_row] == '_':
+                pos = 1
+                for _ in range(abs(row_result)):
+                    if self._game_board[start_column - pos][start_row + pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+            
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'b'
+                return True
+            
+            check_opponent = self._game_board[end_column][end_row].isupper()
+            if check_opponent is True:
+                pos = 1
+                for _ in range(abs(row_result)-1):
+                    if self._game_board[start_column - pos][start_row + pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+                    
+                return self.white_capture(start_column, start_row, end_column, end_row)
+            else:
+                return False
+                """
+                captured_piece = self._game_board[end_column][end_row]
+                self._white_dict[captured_piece] -= 1
+                if self._white_dict[captured_piece] == 0:
+                    self.set_game_state('BLACK_WON')
+
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'b'
+
+                return True
+                """
 
     def move_black_rook(self, start_coord, end_coord):
         """
@@ -614,163 +616,155 @@ class ChessVar:
             return False
             
         if row_result == 0:                             # check_row
-            check_black = self._game_board[end_column][end_row].islower()  
-            if check_black is True:
-                return False
-            else:
-                if column_result < 0:   #moving up
-                    if self._game_board[end_column][end_row] == '_':
-                        pos = 1
-                        for _ in range(abs(column_result)):
-                            if self._game_board[start_column - pos][start_row] == '_':
-                                pos += 1
-                            else:
-                                return False
-                    
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'r'
-                        return True
-                    
-                    check_opponent = self._game_board[end_column][end_row].isupper()
-                    if check_opponent is True:
-                        pos = 1
-                        for _ in range(abs(column_result)-1):
-                            if self._game_board[start_column - pos][start_row] == '_':
-                                pos += 1
-                            else:
-                                return False
-                        return self.white_capture(start_column, start_row, end_column, end_row)
-                    else:
-                        return False
-                        """
-                        captured_piece = self._game_board[end_column][end_row]
-                        self._white_dict[captured_piece] -= 1
-                        if self._white_dict[captured_piece] == 0:
-                            self.set_game_state('BLACK_WON')
+            if column_result < 0:   #moving up
+                if self._game_board[end_column][end_row] == '_':
+                    pos = 1
+                    for _ in range(abs(column_result)):
+                        if self._game_board[start_column - pos][start_row] == '_':
+                            pos += 1
+                        else:
+                            return False
+                
+                    self._game_board[start_column][start_row] = '_'
+                    self._game_board[end_column][end_row] = 'r'
+                    return True
+                
+                check_opponent = self._game_board[end_column][end_row].isupper()
+                if check_opponent is True:
+                    pos = 1
+                    for _ in range(abs(column_result)-1):
+                        if self._game_board[start_column - pos][start_row] == '_':
+                            pos += 1
+                        else:
+                            return False
+                    return self.white_capture(start_column, start_row, end_column, end_row)
+                else:
+                    return False
+                    """
+                    captured_piece = self._game_board[end_column][end_row]
+                    self._white_dict[captured_piece] -= 1
+                    if self._white_dict[captured_piece] == 0:
+                        self.set_game_state('BLACK_WON')
 
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'r'
+                    self._game_board[start_column][start_row] = '_'
+                    self._game_board[end_column][end_row] = 'r'
 
-                        return True
-                        """
+                    return True
+                    """
+                
+            else: #moving down
+                if self._game_board[end_column][end_row] == '_':
+                    pos = 1
+                    for _ in range(abs(column_result)-1):
+                        if self._game_board[start_column + pos][start_row] == '_':
+                            pos += 1
+                        else:
+                            return False
+                
+                    self._game_board[start_column][start_row] = '_'
+                    self._game_board[end_column][end_row] = 'r'
+                    return True
                     
-                else: #moving down
-                    if self._game_board[end_column][end_row] == '_':
-                        pos = 1
-                        for _ in range(abs(column_result)-1):
-                            if self._game_board[start_column + pos][start_row] == '_':
-                                pos += 1
-                            else:
-                                return False
-                    
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'r'
-                        return True
+                check_opponent = self._game_board[end_column][end_row].isupper()
+                if check_opponent is True:
+                    pos = 1
+                    for _ in range(abs(column_result)-1):
+                        if self._game_board[start_column + pos][start_row] == '_':
+                            pos += 1
+                        else:
+                            return False
+
+                    return self.white_capture(start_column, start_row, end_column, end_row)
+                else:
+                    return False
+                    """
+                    captured_piece = self._game_board[end_column][end_row]
+                    self._white_dict[captured_piece] -= 1
+                    if self._white_dict[captured_piece] == 0:
+                        self.set_game_state('BLACK_WON')
+
+                    self._game_board[start_column][start_row] = '_'
+                    self._game_board[end_column][end_row] = 'r'
+
+                    return True
+                    """
+        
+        else:                   #check column
+            if row_result < 0:   #moving left 
+                if self._game_board[end_column][end_row] == '_':
+                    pos = 1
+                    for _ in range(abs(row_result)):
+                        if self._game_board[start_column][start_row - pos] == '_':
+                            pos += 1
+                        else:
+                            return False
+                
+                    self._game_board[start_column][start_row] = '_'
+                    self._game_board[end_column][end_row] = 'r'
+                    return True
+                
+                check_opponent = self._game_board[end_column][end_row].isupper()
+                if check_opponent is True:
+                    pos = 1
+                    for _ in range(abs(row_result)-1):
+                        if self._game_board[start_column][start_row - pos] == '_':
+                            pos += 1
+                        else:
+                            return False
                         
-                    check_opponent = self._game_board[end_column][end_row].isupper()
-                    if check_opponent is True:
-                        pos = 1
-                        for _ in range(abs(column_result)-1):
-                            if self._game_board[start_column + pos][start_row] == '_':
-                                pos += 1
-                            else:
-                                return False
+                    return self.white_capture(start_column, start_row, end_column, end_row)
+                else:
+                    return False
+                    """
+                    captured_piece = self._game_board[end_column][end_row]
+                    self._white_dict[captured_piece] -= 1
+                    if self._white_dict[captured_piece] == 0:
+                        self.set_game_state('BLACK_WON')
 
-                        return self.white_capture(start_column, start_row, end_column, end_row)
-                    else:
-                        return False
-                        """
-                        captured_piece = self._game_board[end_column][end_row]
-                        self._white_dict[captured_piece] -= 1
-                        if self._white_dict[captured_piece] == 0:
-                            self.set_game_state('BLACK_WON')
+                    self._game_board[start_column][start_row] = '_'
+                    self._game_board[end_column][end_row] = 'r'
 
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'r'
+                    return True
+                    """
+                
+            else: #moving right
+                if self._game_board[end_column][end_row] == '_':
+                    pos = 1
+                    for _ in range(abs(row_result)-1):
+                        if self._game_board[start_column][start_row + pos] == '_':
+                            pos += 1
+                        else:
+                            return False
+                
+                    self._game_board[start_column][start_row] = '_'
+                    self._game_board[end_column][end_row] = 'r'
 
-                        return True
-                        """
-    
-        else:                                                               #check column
-            check_black = self._game_board[end_column][end_row].islower()  
-            if check_black is True:
-                return False
-            
-            else:
-                if row_result < 0:   #moving left 
-                    if self._game_board[end_column][end_row] == '_':
-                        pos = 1
-                        for _ in range(abs(row_result)):
-                            if self._game_board[start_column][start_row - pos] == '_':
-                                pos += 1
-                            else:
-                                return False
+                    return True
                     
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'r'
-                        return True
-                    
-                    check_opponent = self._game_board[end_column][end_row].isupper()
-                    if check_opponent is True:
-                        pos = 1
-                        for _ in range(abs(row_result)-1):
-                            if self._game_board[start_column][start_row - pos] == '_':
-                                pos += 1
-                            else:
-                                return False
-                            
-                        return self.white_capture(start_column, start_row, end_column, end_row)
-                    else:
-                        return False
-                        """
-                        captured_piece = self._game_board[end_column][end_row]
-                        self._white_dict[captured_piece] -= 1
-                        if self._white_dict[captured_piece] == 0:
-                            self.set_game_state('BLACK_WON')
-
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'r'
-
-                        return True
-                        """
-                    
-                else: #moving right
-                    if self._game_board[end_column][end_row] == '_':
-                        pos = 1
-                        for _ in range(abs(row_result)-1):
-                            if self._game_board[start_column][start_row + pos] == '_':
-                                pos += 1
-                            else:
-                                return False
-                    
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'r'
-
-                        return True
+                check_opponent = self._game_board[end_column][end_row].isupper()
+                if check_opponent is True:
+                    pos = 1
+                    for _ in range(abs(row_result)-1):
+                        if self._game_board[start_column][start_row + pos] == '_':
+                            pos += 1
+                        else:
+                            return False
                         
-                    check_opponent = self._game_board[end_column][end_row].isupper()
-                    if check_opponent is True:
-                        pos = 1
-                        for _ in range(abs(row_result)-1):
-                            if self._game_board[start_column][start_row + pos] == '_':
-                                pos += 1
-                            else:
-                                return False
-                            
-                        return self.white_capture(start_column, start_row, end_column, end_row)
-                    else:
-                        return False
-                        """
-                        captured_piece = self._game_board[end_column][end_row]
-                        self._white_dict[captured_piece] -= 1
-                        if self._white_dict[captured_piece] == 0:
-                            self.set_game_state('BLACK_WON')
+                    return self.white_capture(start_column, start_row, end_column, end_row)
+                else:
+                    return False
+                    """
+                    captured_piece = self._game_board[end_column][end_row]
+                    self._white_dict[captured_piece] -= 1
+                    if self._white_dict[captured_piece] == 0:
+                        self.set_game_state('BLACK_WON')
 
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'r'
+                    self._game_board[start_column][start_row] = '_'
+                    self._game_board[end_column][end_row] = 'r'
 
-                        return True
-                        """
+                    return True
+                    """
+                    
     def move_black_queen(self, start_coord, end_coord):
         """
         Black Queen: 'q', 1
@@ -795,8 +789,6 @@ class ChessVar:
         row_result = end_row - start_row
         column_result = end_column - start_column
 
-
-        
         if abs(column_result) == abs(row_result): #bishop functionality 
             if column_result > 0 and row_result < 0:   #moving down + left
                 if self._game_board[end_column][end_row] == '_':
@@ -1351,154 +1343,150 @@ class ChessVar:
             return False
 
         #if column_result > 0:                             
-        check_white = self._game_board[end_column][end_row].isupper()  #remove
-        if check_white is True:
-            return False
-        else:
-            if column_result > 0 and row_result < 0:   #moving down + left
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(column_result)):
-                        if self._game_board[start_column + pos][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'B'
-                    return True
-                
-                check_opponent = self._game_board[end_column][end_row].islower()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column + pos][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                    return self.black_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._black_dict[captured_piece] -= 1
-                    if self._black_dict[captured_piece] == 0:
-                        self.set_game_state('WHITE_WON')
+        if column_result > 0 and row_result < 0:   #moving down + left
+            if self._game_board[end_column][end_row] == '_':
+                pos = 1
+                for _ in range(abs(column_result)):
+                    if self._game_board[start_column + pos][start_row - pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+            
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'B'
+                return True
+            
+            check_opponent = self._game_board[end_column][end_row].islower()
+            if check_opponent is True:
+                pos = 1
+                for _ in range(abs(column_result)-1):
+                    if self._game_board[start_column + pos][start_row - pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+                return self.black_capture(start_column, start_row, end_column, end_row)
+            else:
+                return False
+                """
+                captured_piece = self._game_board[end_column][end_row]
+                self._black_dict[captured_piece] -= 1
+                if self._black_dict[captured_piece] == 0:
+                    self.set_game_state('WHITE_WON')
 
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'B'
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'B'
 
-                    return True
-                    """
-                
-            if column_result > 0 and row_result > 0:   #moving down + right
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(column_result)):
-                        if self._game_board[start_column + pos][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'B'
-                    return True
-                
-                check_opponent = self._game_board[end_column][end_row].islower()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column + pos][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                    return self.black_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._black_dict[captured_piece] -= 1
-                    if self._black_dict[captured_piece] == 0:
-                        self.set_game_state('WHITE_WON')
+                return True
+                """
+            
+        if column_result > 0 and row_result > 0:   #moving down + right
+            if self._game_board[end_column][end_row] == '_':
+                pos = 1
+                for _ in range(abs(column_result)):
+                    if self._game_board[start_column + pos][start_row + pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+            
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'B'
+                return True
+            
+            check_opponent = self._game_board[end_column][end_row].islower()
+            if check_opponent is True:
+                pos = 1
+                for _ in range(abs(column_result)-1):
+                    if self._game_board[start_column + pos][start_row + pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+                return self.black_capture(start_column, start_row, end_column, end_row)
+            else:
+                return False
+                """
+                captured_piece = self._game_board[end_column][end_row]
+                self._black_dict[captured_piece] -= 1
+                if self._black_dict[captured_piece] == 0:
+                    self.set_game_state('WHITE_WON')
 
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'B'
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'B'
 
-                    return True
-                    """
+                return True
+                """
+            
+        if column_result < 0 and row_result < 0 : #moving up + left
+            if self._game_board[end_column][end_row] == '_':
+                pos = 1
+                for _ in range(abs(column_result)-1):
+                    if self._game_board[start_column - pos][start_row - pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+            
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'B'
+                return True
                 
-            if column_result < 0 and row_result < 0 : #moving up + left
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column - pos][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'B'
-                    return True
+            check_opponent = self._game_board[end_column][end_row].isupper()
+            if check_opponent is True:
+                pos = 1
+                for _ in range(abs(column_result)-1):
+                    if self._game_board[start_column - pos][start_row - pos] == '_':
+                        pos += 1
+                    else:
+                        return False
                     
-                check_opponent = self._game_board[end_column][end_row].isupper()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column - pos][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                        
-                    return self.black_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._black_dict[captured_piece] -= 1
-                    if self._black_dict[captured_piece] == 0:
-                        self.set_game_state('WHITE_WON')
+                return self.black_capture(start_column, start_row, end_column, end_row)
+            else:
+                return False
+                """
+                captured_piece = self._game_board[end_column][end_row]
+                self._black_dict[captured_piece] -= 1
+                if self._black_dict[captured_piece] == 0:
+                    self.set_game_state('WHITE_WON')
 
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'B'
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'B'
 
-                    return True
-                    """
+                return True
+                """
 
-            else:                        # moving up and right                                       #check column
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(row_result)):
-                        if self._game_board[start_column - pos][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'B'
-                    return True
-                
-                check_opponent = self._game_board[end_column][end_row].islower()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(row_result)-1):
-                        if self._game_board[start_column - pos][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                    return self.black_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-                    """
-                    captured_piece = self._game_board[end_column][end_row]
-                    self._black_dict[captured_piece] -= 1
-                    if self._black_dict[captured_piece] == 0:
-                        self.set_game_state('WHITE_WON')
+        else:                        # moving up and right                                       #check column
+            if self._game_board[end_column][end_row] == '_':
+                pos = 1
+                for _ in range(abs(row_result)):
+                    if self._game_board[start_column - pos][start_row + pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+            
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'B'
+                return True
+            
+            check_opponent = self._game_board[end_column][end_row].islower()
+            if check_opponent is True:
+                pos = 1
+                for _ in range(abs(row_result)-1):
+                    if self._game_board[start_column - pos][start_row + pos] == '_':
+                        pos += 1
+                    else:
+                        return False
+                return self.black_capture(start_column, start_row, end_column, end_row)
+            else:
+                return False
+                """
+                captured_piece = self._game_board[end_column][end_row]
+                self._black_dict[captured_piece] -= 1
+                if self._black_dict[captured_piece] == 0:
+                    self.set_game_state('WHITE_WON')
 
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'B'
+                self._game_board[start_column][start_row] = '_'
+                self._game_board[end_column][end_row] = 'B'
 
-                    return True
-                    """
+                return True
+                """
 
     def move_white_rook(self, start_coord, end_coord):
         """
@@ -1526,159 +1514,151 @@ class ChessVar:
             return False
             
         if row_result == 0:                             # check_row
-            check_white = self._game_board[end_column][end_row].isupper()  #remove
-            if check_white is True:
-                return False
-            else:
-                if column_result < 0:   #moving up
-                    if self._game_board[end_column][end_row] == '_':
-                        pos = 1
-                        for _ in range(abs(column_result)):
-                            if self._game_board[start_column - pos][start_row] == '_':
-                                pos += 1
-                            else:
-                                return False
-                    
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'R'
-                        return True
-                    
-                    check_opponent = self._game_board[end_column][end_row].islower()
-                    if check_opponent is True:
-                        pos = 1
-                        for _ in range(abs(column_result)-1):
-                            if self._game_board[start_column - pos][start_row] == '_':
-                                pos += 1
-                            else:
-                                return False
-                            
-                        return self.black_capture(start_column, start_row, end_column, end_row)
-                    else:
-                        return False
-                        """
-                        captured_piece = self._game_board[end_column][end_row]
-                        self._black_dict[captured_piece] -= 1
-                        if self._black_dict[captured_piece] == 0:
-                            self.set_game_state('WHITE_WON')
-
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'R'
-
-                        return True
-                        """
-                    
-                else: #moving down
-                    if self._game_board[end_column][end_row] == '_':
-                        pos = 1
-                        for _ in range(abs(column_result)-1):
-                            if self._game_board[start_column + pos][start_row] == '_':
-                                pos += 1
-                            else:
-                                return False
-                    
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'R'
-                        return True
+            if column_result < 0:   #moving up
+                if self._game_board[end_column][end_row] == '_':
+                    pos = 1
+                    for _ in range(abs(column_result)):
+                        if self._game_board[start_column - pos][start_row] == '_':
+                            pos += 1
+                        else:
+                            return False
+                
+                    self._game_board[start_column][start_row] = '_'
+                    self._game_board[end_column][end_row] = 'R'
+                    return True
+                
+                check_opponent = self._game_board[end_column][end_row].islower()
+                if check_opponent is True:
+                    pos = 1
+                    for _ in range(abs(column_result)-1):
+                        if self._game_board[start_column - pos][start_row] == '_':
+                            pos += 1
+                        else:
+                            return False
                         
-                    check_opponent = self._game_board[end_column][end_row].islower()
-                    if check_opponent is True:
-                        pos = 1
-                        for _ in range(abs(column_result)-1):
-                            if self._game_board[start_column + pos][start_row] == '_':
-                                pos += 1
-                            else:
-                                return False
-                        return self.black_capture(start_column, start_row, end_column, end_row)
-                    else:
-                        return False
-                        """
-                        captured_piece = self._game_board[end_column][end_row]
-                        self._black_dict[captured_piece] -= 1
-                        if self._black_dict[captured_piece] == 0:
-                            self.set_game_state('WHITE_WON')
+                    return self.black_capture(start_column, start_row, end_column, end_row)
+                else:
+                    return False
+                    """
+                    captured_piece = self._game_board[end_column][end_row]
+                    self._black_dict[captured_piece] -= 1
+                    if self._black_dict[captured_piece] == 0:
+                        self.set_game_state('WHITE_WON')
 
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'R'
+                    self._game_board[start_column][start_row] = '_'
+                    self._game_board[end_column][end_row] = 'R'
 
-                        return True
-                        """
+                    return True
+                    """
+                
+            else: #moving down
+                if self._game_board[end_column][end_row] == '_':
+                    pos = 1
+                    for _ in range(abs(column_result)-1):
+                        if self._game_board[start_column + pos][start_row] == '_':
+                            pos += 1
+                        else:
+                            return False
+                
+                    self._game_board[start_column][start_row] = '_'
+                    self._game_board[end_column][end_row] = 'R'
+                    return True
+                    
+                check_opponent = self._game_board[end_column][end_row].islower()
+                if check_opponent is True:
+                    pos = 1
+                    for _ in range(abs(column_result)-1):
+                        if self._game_board[start_column + pos][start_row] == '_':
+                            pos += 1
+                        else:
+                            return False
+                    return self.black_capture(start_column, start_row, end_column, end_row)
+                else:
+                    return False
+                    """
+                    captured_piece = self._game_board[end_column][end_row]
+                    self._black_dict[captured_piece] -= 1
+                    if self._black_dict[captured_piece] == 0:
+                        self.set_game_state('WHITE_WON')
+
+                    self._game_board[start_column][start_row] = '_'
+                    self._game_board[end_column][end_row] = 'R'
+
+                    return True
+                    """
     
-        else:                                                               #check column
-            check_white = self._game_board[end_column][end_row].isupper()  #remove
-            if check_white is True:
-                return False
-            else:
-                if row_result < 0:   #moving left 
-                    if self._game_board[end_column][end_row] == '_':
-                        pos = 1
-                        for _ in range(abs(row_result)):
-                            if self._game_board[start_column][start_row - pos] == '_':
-                                pos += 1
-                            else:
-                                return False
-                    
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'R'
-                        return True
-                    
-                    check_opponent = self._game_board[end_column][end_row].islower()
-                    if check_opponent is True:
-                        pos = 1
-                        for _ in range(abs(row_result)-1):
-                            if self._game_board[start_column][start_row - pos] == '_':
-                                pos += 1
-                            else:
-                                return False
-                        return self.black_capture(start_column, start_row, end_column, end_row)
-                    else:
-                        return False
-                        """
-                        captured_piece = self._game_board[end_column][end_row]
-                        self._black_dict[captured_piece] -= 1
-                        if self._black_dict[captured_piece] == 0:
-                            self.set_game_state('WHITE_WON')
+        else:           #check column
+            if row_result < 0:   #moving left 
+                if self._game_board[end_column][end_row] == '_':
+                    pos = 1
+                    for _ in range(abs(row_result)):
+                        if self._game_board[start_column][start_row - pos] == '_':
+                            pos += 1
+                        else:
+                            return False
+                
+                    self._game_board[start_column][start_row] = '_'
+                    self._game_board[end_column][end_row] = 'R'
+                    return True
+                
+                check_opponent = self._game_board[end_column][end_row].islower()
+                if check_opponent is True:
+                    pos = 1
+                    for _ in range(abs(row_result)-1):
+                        if self._game_board[start_column][start_row - pos] == '_':
+                            pos += 1
+                        else:
+                            return False
+                    return self.black_capture(start_column, start_row, end_column, end_row)
+                else:
+                    return False
+                    """
+                    captured_piece = self._game_board[end_column][end_row]
+                    self._black_dict[captured_piece] -= 1
+                    if self._black_dict[captured_piece] == 0:
+                        self.set_game_state('WHITE_WON')
 
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'R'
+                    self._game_board[start_column][start_row] = '_'
+                    self._game_board[end_column][end_row] = 'R'
 
-                        return True
-                        """
+                    return True
+                    """
+                
+            else: #moving right
+                if self._game_board[end_column][end_row] == '_':
+                    pos = 1
+                    for _ in range(abs(row_result)-1):
+                        if self._game_board[start_column][start_row + pos] == '_':
+                            pos += 1
+                        else:
+                            return False
+                
+                    self._game_board[start_column][start_row] = '_'
+                    self._game_board[end_column][end_row] = 'R'
+                    return True
                     
-                else: #moving right
-                    if self._game_board[end_column][end_row] == '_':
-                        pos = 1
-                        for _ in range(abs(row_result)-1):
-                            if self._game_board[start_column][start_row + pos] == '_':
-                                pos += 1
-                            else:
-                                return False
-                    
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'R'
-                        return True
-                        
-                    check_opponent = self._game_board[end_column][end_row].islower()
-                    if check_opponent is True:
-                        pos = 1
-                        for _ in range(abs(row_result)-1):
-                            if self._game_board[start_column][start_row + pos] == '_':
-                                pos += 1
-                            else:
-                                return False
-                        return self.black_capture(start_column, start_row, end_column, end_row)
-                    else:
-                        return False
-                        """
-                        captured_piece = self._game_board[end_column][end_row]
-                        self._black_dict[captured_piece] -= 1
-                        if self._black_dict[captured_piece] == 0:
-                            self.set_game_state('WHITE_WON')
+                check_opponent = self._game_board[end_column][end_row].islower()
+                if check_opponent is True:
+                    pos = 1
+                    for _ in range(abs(row_result)-1):
+                        if self._game_board[start_column][start_row + pos] == '_':
+                            pos += 1
+                        else:
+                            return False
+                    return self.black_capture(start_column, start_row, end_column, end_row)
+                else:
+                    return False
+                    """
+                    captured_piece = self._game_board[end_column][end_row]
+                    self._black_dict[captured_piece] -= 1
+                    if self._black_dict[captured_piece] == 0:
+                        self.set_game_state('WHITE_WON')
 
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'R'
+                    self._game_board[start_column][start_row] = '_'
+                    self._game_board[end_column][end_row] = 'R'
 
-                        return True
-                        """
+                    return True
+                    """
 
     def move_white_queen(self, start_coord, end_coord):
         """
@@ -1717,6 +1697,7 @@ class ChessVar:
                     self._game_board[start_column][start_row] = '_'
                     self._game_board[end_column][end_row] = 'Q'
                     return True
+                
                 check_opponent = self._game_board[end_column][end_row].islower()
                 if check_opponent is True:
                     pos = 1
@@ -1754,6 +1735,7 @@ class ChessVar:
                     self._game_board[start_column][start_row] = '_'
                     self._game_board[end_column][end_row] = 'Q'
                     return True
+                
                 check_opponent = self._game_board[end_column][end_row].islower()
                 if check_opponent is True:
                     pos = 1
@@ -2086,13 +2068,10 @@ def main():
     
     cv = ChessVar()
 
-    #print(cv.black_capture(2, 0, 1, 1))
-    # print(cv.white_capture(1,1,0,2))
-    #print(cv.convert_algebraic('b8'))
-    print(cv.make_move('a6', 'a7'))
+    print(cv.make_move('d5', 'd7'))
     #print(cv.get_game_state())
 
-    #print(cv.make_move('b7', 'a6'))
+   # print(cv.make_move('d4', 'a7'))
 
     #print(cv.make_move('e2', 'e4'))
 
