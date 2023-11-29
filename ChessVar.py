@@ -10,14 +10,14 @@ class ChessVar:
         self._game_state = 'UNFINISHED'  # 'UNFINISHED', 'WHITE_WON', 'BLACK_WON'
         self._move_state = 'WHITE'  # 'BLACK'
         self._board_size = 8
-        self._game_board = [['r', 'B', 'b', 'B', 'b', 'b', 'B', 'r'],
-                            ['B', 'p', 'p', 'b', 'B', 'p', 'p', 'b'],
-                            ['_', '_', 'n', '_', '_', 'N', '_', '_'],
-                            ['B', '_', '_', 'b', 'B', '_', '_', 'b'],
-                            ['_', 'B', '_', 'B', 'B', '_', 'b', '_'],
-                            ['_', '_', '_', 'P', '_', '_', '_', '_'],
-                            ['P', 'P', 'P', '_', '_', 'P', 'P', 'P'],
-                            ['R', 'N', '_', 'Q', 'K', 'B', 'N', 'R']]  
+        self._game_board = [['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+                            ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+                            ['b', '_', 'b', '_', 'B', '_', 'B', '_'],
+                            ['_', '_', 'b', 'b', 'b', '_', '_', '_'],
+                            ['_', 'N', 'b', 'K', 'b', 'N', '_', '_'],
+                            ['_', '_', 'b', 'b', 'b', '_', '_', 'B'],
+                            ['b', 'P', 'b', 'P', 'B', 'P', 'B', 'P'],
+                            ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]  
 
         self._white_dict = {'K': 1, 'Q': 1, 'R': 2, 'B': 2, 'N': 2, 'P': 8}
         self._black_dict = {'k': 1, 'q': 1, 'r': 2, 'b': 2, 'n': 2, 'p': 8}
@@ -970,15 +970,11 @@ class ChessVar:
         row_result = end_row - start_row
         column_result = end_column - start_column
         
-        #if 1 > column_result > 2:
-           # return False
-        if abs(column_result) != 1:
+        if abs(column_result) > 1:
             return False
-        if abs(row_result) != 1: 
+        if abs(row_result) > 1: 
             return False
-        #if 1 > row_result > 2:
-          #  return False
-        
+
         if self._game_board[end_column][end_row] == '_':            # up, down
             if abs(column_result) == 1 and row_result == 0:
                 self._game_board[start_column][start_row] = '_'
@@ -1776,9 +1772,11 @@ class ChessVar:
         row_result = end_row - start_row
         column_result = end_column - start_column
 
-        if abs(column_result) != 1:
+       # if abs(column_result) == abs(row_result): #diagonal 
+
+        if abs(column_result) > 1:
             return False
-        if abs(row_result) != 1: 
+        if abs(row_result) > 1: 
             return False
         
         if self._game_board[end_column][end_row] == '_':            # up, down
@@ -1825,7 +1823,7 @@ def main():
     
     cv = ChessVar()
     #print(cv.convert_algebraic('b8'))
-    print(cv.make_move('f6', 'e8'))
+    print(cv.make_move('d4', 'b2'))
     print(cv.get_game_state())
 
  #   print(cv.make_move('f6', 'e4'))
