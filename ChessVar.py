@@ -11,10 +11,10 @@ class ChessVar:
         self._move_state = 'WHITE'  # 'BLACK'
         self._game_board = [['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
                             ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
-                            ['P', '_', 'P', '_', '_', '_', '_', '_'],
                             ['_', '_', '_', '_', '_', '_', '_', '_'],
-                            ['_', '_', '_', '_', 'p', '_', '_', '_'],
-                            ['_', '_', 'p', '_', '_', '_', '_', '_'],
+                            ['_', '_', '_', '_', '_', '_', '_', '_'],
+                            ['_', '_', '_', '_', '_', '_', '_', '_'],
+                            ['_', '_', '_', '_', '_', '_', '_', '_'],
                             ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
                             ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]  
 
@@ -237,7 +237,7 @@ class ChessVar:
         if piece == 'b' or piece == 'B':
             return self.move_bishop(start_coord, end_coord)
 
-        if piece == 'r' or piece == 'B':
+        if piece == 'r' or piece == 'R':
             return self.move_rook(start_coord, end_coord)
         
         if piece == 'q' or piece == 'Q':
@@ -1667,7 +1667,7 @@ class ChessVar:
             end_square = self._game_board[end_column][end_row]
             if end_square != '_':
                 pos = 1
-                for _ in range(abs(row_result)-1):
+                for _ in range(abs(column_result)-1):
                     if self._game_board[start_column + pos][start_row - pos] == '_':
                         pos += 1
                     else:
@@ -1695,7 +1695,7 @@ class ChessVar:
             end_square = self._game_board[end_column][end_row]
             if end_square != '_':
                 pos = 1
-                for _ in range(abs(row_result)-1):
+                for _ in range(abs(column_result)-1):
                     if self._game_board[start_column + pos][start_row + pos] == '_':
                         pos += 1
                     else:
@@ -1723,7 +1723,7 @@ class ChessVar:
             end_square = self._game_board[end_column][end_row]
             if end_square != '_':
                 pos = 1
-                for _ in range(abs(row_result)-1):
+                for _ in range(abs(column_result)-1):
                     if self._game_board[start_column - pos][start_row - pos] == '_':
                         pos += 1
                     else:
@@ -1826,7 +1826,7 @@ class ChessVar:
                 end_square = self._game_board[end_column][end_row]
                 if end_square != '_':
                     pos = 1
-                    for _ in range(abs(row_result)-1):
+                    for _ in range(abs(column_result)-1):
                         if self._game_board[start_column - pos][start_row] == '_':
                             pos += 1
                         else:
@@ -1854,7 +1854,7 @@ class ChessVar:
                 end_square = self._game_board[end_column][end_row]
                 if end_square != '_':
                     pos = 1
-                    for _ in range(abs(row_result)-1):
+                    for _ in range(abs(column_result)-1):
                         if self._game_board[start_column + pos][start_row] == '_':
                             pos += 1
                         else:
@@ -1951,7 +1951,7 @@ class ChessVar:
                 end_square = self._game_board[end_column][end_row]
                 if end_square != '_':
                     pos = 1
-                    for _ in range(abs(row_result)-1):
+                    for _ in range(abs(column_result)-1):
                         if self._game_board[start_column + pos][start_row - pos] == '_':
                             pos += 1
                         else:
@@ -1979,7 +1979,7 @@ class ChessVar:
                 end_square = self._game_board[end_column][end_row]
                 if end_square != '_':
                     pos = 1
-                    for _ in range(abs(row_result)-1):
+                    for _ in range(abs(column_result)-1):
                         if self._game_board[start_column + pos][start_row + pos] == '_':
                             pos += 1
                         else:
@@ -2007,7 +2007,7 @@ class ChessVar:
                 end_square = self._game_board[end_column][end_row]
                 if end_square != '_':
                     pos = 1
-                    for _ in range(abs(row_result)-1):
+                    for _ in range(abs(column_result)-1):
                         if self._game_board[start_column - pos][start_row - pos] == '_':
                             pos += 1
                         else:
@@ -2066,7 +2066,7 @@ class ChessVar:
                     end_square = self._game_board[end_column][end_row]
                     if end_square != '_':
                         pos = 1
-                        for _ in range(abs(row_result)-1):
+                        for _ in range(abs(column_result)-1):
                             if self._game_board[start_column - pos][start_row] == '_':
                                 pos += 1
                             else:
@@ -2094,7 +2094,7 @@ class ChessVar:
                     end_square = self._game_board[end_column][end_row]
                     if end_square != '_':
                         pos = 1
-                        for _ in range(abs(row_result)-1):
+                        for _ in range(abs(column_result)-1):
                             if self._game_board[start_column + pos][start_row] == '_':
                                 pos += 1
                             else:
@@ -2123,7 +2123,7 @@ class ChessVar:
                     end_square = self._game_board[end_column][end_row]
                     if end_square != '_':
                         pos = 1
-                        for _ in range(abs(row_result)-1):
+                        for _ in range(abs(row_result)):
                             if self._game_board[start_column][start_row - pos] == '_':
                                 pos += 1
                             else:
@@ -2216,10 +2216,10 @@ def main():
     
     cv = ChessVar()
 
-    print(cv.make_move('b1', 'c3'))
+    print(cv.make_move('a2', 'a4'))
     #print(cv.get_game_state())
 
-    print(cv.make_move('b8', 'a6'))
+    #print(cv.make_move('b3', 'a4'))
 
     #print(cv.make_move('c3', 'e2'))
 
