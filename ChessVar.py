@@ -150,68 +150,6 @@ class ChessVar:
                 printed_row += column
             print(printed_row)
 
-    def check_white_move(self, start_coord, end_coord):
-        """
-        Method which takes two parameters: the start and end coordinates converted in the make_move
-        method. It then checks which piece is at the start location and passes the coordinates to the
-        appropriate move_white_'PIECE' for further move validation. 
-
-        Returns True or False depending on the return value of the move_white_'PIECE' method.
-        """
-        start_row, start_column = start_coord
-        end_row, end_column = end_coord
-        piece = self._game_board[start_column][start_row]
-
-        if piece == 'P':
-            return self.move_white_pawn(start_coord, end_coord)
-
-        if self._game_board[start_column][start_row] == 'N':
-            # return self.move_white_knight(start_coord, end_coord)
-            return self.move_knight(start_coord, end_coord)
-        
-        if self._game_board[start_column][start_row] == 'B':
-            return self.move_white_bishop(start_coord, end_coord)
-
-        if self._game_board[start_column][start_row] == 'R':
-            return self.move_white_rook(start_coord, end_coord)
-        
-        if self._game_board[start_column][start_row] == 'Q':
-            return self.move_white_queen(start_coord, end_coord)
-
-        if piece == 'K':
-            return self.move_white_king(start_coord, end_coord)
-
-    def check_black_move(self, start_coord, end_coord):
-        """        
-        Method which takes two parameters: the start and end coordinates converted in the make_move
-        method. It then checks which piece is at the start location and passes the coordinates to the
-        appropriate move_black_'PIECE' for further move validation. 
-
-        Returns True or False depending on the return value of the move_black_'PIECE' method.
-        """
-        start_row, start_column = start_coord
-        end_row, end_column = end_coord
-        piece = self._game_board[start_column][start_row]
-
-        if piece == 'p':
-            return self.move_black_pawn(start_coord, end_coord)
-
-        if piece == 'n':
-            # return self.move_black_knight(start_coord, end_coord)
-            return self.move_knight(start_coord, end_coord)
-        
-        if self._game_board[start_column][start_row] == 'b':
-            return self.move_black_bishop(start_coord, end_coord)
-
-        if self._game_board[start_column][start_row] == 'r':
-            return self.move_black_rook(start_coord, end_coord)
-        
-        if self._game_board[start_column][start_row] == 'q':
-            return self.move_black_queen(start_coord, end_coord)
-
-        if piece == 'k':
-            return self.move_black_king(start_coord, end_coord)
-
     def check_move(self, start_coord, end_coord):
         """
         Method which takes two parameters: the start and end coordinates converted in the make_move
@@ -245,7 +183,6 @@ class ChessVar:
 
         if piece == 'k' or piece == 'K':
             return self.move_king(start_coord, end_coord)
-
 
     def black_capture(self, start_column, start_row, end_column, end_row):
         """
@@ -360,609 +297,7 @@ class ChessVar:
             return True
         else:
             return False
-
-    def move_black_knight(self, start_coord, end_coord):
-        """
-        Black Knight: 'n', 2
-        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
-        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'n'
-        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
-        If the piece captured is the only piece or only remaining piece, the game state is updated to 'BLACK_WON'
         
-        Valid moves: - End square is empty '_' or the opponent's piece
-                     - End square is on the chess board
-                     - Can move (L):
-                            - forward one square, left or right two squares
-                            - backward one square, left or right two squares
-                            - forward two squares, left or right one square
-                            - backward two sqaures, left or right one square
-
-        Capture:     - Opponent's piece on end square
-
-        If move is vaild, returns True otherwise returns False 
-        """
-        start_row, start_column = start_coord
-        end_row, end_column = end_coord
-
-        row_result = end_row - start_row
-        column_result = end_column - start_column
-        
-        if abs(column_result) > 2 or abs(row_result) > 2:
-            return False
-        
-        if self._game_board[end_column][end_row] == '_':
-            if abs(column_result) == 1 and abs(row_result) == 2:
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'n'
-                return True
-            
-            if abs(column_result) == 2 and abs(row_result) == 1:
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'n'
-                return True
-            else:
-                return False
-        
-        check_opponent = self._game_board[end_column][end_row].isupper()
-        if check_opponent is True:
-            return self.white_capture(start_column, start_row, end_column, end_row)
-        else:
-            return False
-
-    def move_black_bishop(self, start_coord, end_coord):
-        """
-        Black bishop: 'b', 2
-        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
-        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'b'
-        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
-        If the piece captured is the only piece or only remaining piece, the game state is updated to 'BLACK_WON'
-        
-        Valid moves: - End square is empty '_' or the opponent's piece, there are no pieces blocking route
-                     - End square is on the chess board
-                     - Can move diagonally forwards or backwards:
-
-        Capture:     - Opponent's piece on end square
-
-        If move is vaild, returns True otherwise returns False 
-        """
-        start_row, start_column = start_coord
-        end_row, end_column = end_coord
-
-        row_result = end_row - start_row
-        column_result = end_column - start_column
-
-        if abs(column_result) == 0 and abs(row_result) != 0: #vert/horz check
-            return False
-        if abs(column_result) != 0 and abs(row_result) == 0:
-            return False
-        
-        if abs(column_result) != abs(row_result):
-            return False
-                           
-        #check_black = self._game_board[end_column][end_row].islower()  #remove
-        #if check_black is True:
-        #    return False # if needed, tab eveything below
-        
-        if column_result > 0 and row_result < 0:   #moving down + left
-            if self._game_board[end_column][end_row] == '_':
-                pos = 1
-                for _ in range(abs(column_result)):
-                    if self._game_board[start_column + pos][start_row - pos] == '_':
-                        pos += 1
-                    else:
-                        return False
-            
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'b'
-                return True
-            check_opponent = self._game_board[end_column][end_row].isupper()
-            if check_opponent is True:
-                pos = 1
-                for _ in range(abs(column_result)-1):
-                    if self._game_board[start_column + pos][start_row - pos] == '_':
-                        pos += 1
-                    else:
-                        return False
-                    
-                return self.white_capture(start_column, start_row, end_column, end_row)
-            else:
-                return False
-                                
-        if column_result > 0 and row_result > 0:   #moving down + right
-            if self._game_board[end_column][end_row] == '_':
-                pos = 1
-                for _ in range(abs(column_result)):
-                    if self._game_board[start_column + pos][start_row + pos] == '_':
-                        pos += 1
-                    else:
-                        return False
-            
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'b'
-                return True
-            
-            check_opponent = self._game_board[end_column][end_row].isupper()
-            if check_opponent is True:
-                pos = 1
-                for _ in range(abs(column_result)-1):
-                    if self._game_board[start_column + pos][start_row + pos] == '_':
-                        pos += 1
-                    else:
-                        return False
-
-                return self.white_capture(start_column, start_row, end_column, end_row)
-            else:
-                return False
-
-        if column_result < 0 and row_result < 0 : #moving up + left
-            if self._game_board[end_column][end_row] == '_':
-                pos = 1
-                for _ in range(abs(column_result)-1):
-                    if self._game_board[start_column - pos][start_row - pos] == '_':
-                        pos += 1
-                    else:
-                        return False
-            
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'b'
-                return True
-                
-            check_opponent = self._game_board[end_column][end_row].isupper()
-            if check_opponent is True:
-                pos = 1
-                for _ in range(abs(column_result)-1):
-                    if self._game_board[start_column - pos][start_row - pos] == '_':
-                        pos += 1
-                    else:
-                        return False
-                return self.white_capture(start_column, start_row, end_column, end_row)
-            else:
-                return False
-
-        else:                        # moving up and right                                       #check column
-            if self._game_board[end_column][end_row] == '_':
-                pos = 1
-                for _ in range(abs(row_result)):
-                    if self._game_board[start_column - pos][start_row + pos] == '_':
-                        pos += 1
-                    else:
-                        return False
-            
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'b'
-                return True
-            
-            check_opponent = self._game_board[end_column][end_row].isupper()
-            if check_opponent is True:
-                pos = 1
-                for _ in range(abs(row_result)-1):
-                    if self._game_board[start_column - pos][start_row + pos] == '_':
-                        pos += 1
-                    else:
-                        return False
-                    
-                return self.white_capture(start_column, start_row, end_column, end_row)
-            else:
-                return False
-
-    def move_black_rook(self, start_coord, end_coord):
-        """
-        Black Rook: 'r', 2
-        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
-        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'r'
-        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
-        If the piece captured is the only piece or only remaining piece, the game state is updated to 'BLACK_WON'
-        
-        Valid moves: - End square is empty '_' or the opponent's piece, there are no pieces blocking route
-                     - End square is on the chess board
-                     - Can move horizontally and vertically forwards and backwards:
-
-        Capture:     - Opponent's piece on end square
-
-        If move is vaild, returns True otherwise returns False 
-        """
-    
-        start_row, start_column = start_coord
-        end_row, end_column = end_coord
-
-        row_result = end_row - start_row
-        column_result = end_column - start_column
-
-        if abs(column_result) > 0 and abs(row_result) > 0: #diagonal check
-            return False
-            
-        if row_result == 0:                             # check_row
-            if column_result < 0:   #moving up
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(column_result)):
-                        if self._game_board[start_column - pos][start_row] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'r'
-                    return True
-                
-                check_opponent = self._game_board[end_column][end_row].isupper()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column - pos][start_row] == '_':
-                            pos += 1
-                        else:
-                            return False
-                    return self.white_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-                
-            else: #moving down
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column + pos][start_row] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'r'
-                    return True
-                    
-                check_opponent = self._game_board[end_column][end_row].isupper()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column + pos][start_row] == '_':
-                            pos += 1
-                        else:
-                            return False
-
-                    return self.white_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-        
-        else:                   #check column
-            if row_result < 0:   #moving left 
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(row_result)):
-                        if self._game_board[start_column][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'r'
-                    return True
-                
-                check_opponent = self._game_board[end_column][end_row].isupper()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(row_result)-1):
-                        if self._game_board[start_column][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                        
-                    return self.white_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-                
-            else: #moving right
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(row_result)-1):
-                        if self._game_board[start_column][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'r'
-
-                    return True
-                    
-                check_opponent = self._game_board[end_column][end_row].isupper()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(row_result)-1):
-                        if self._game_board[start_column][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                        
-                    return self.white_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-
-    def move_black_queen(self, start_coord, end_coord):
-        """
-        Black Queen: 'q', 1
-        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
-        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'q'
-        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
-        If the piece captured is the only piece or only remaining piece, the game state is updated to 'BLACK_WON'
-        
-        Valid moves: - End square is empty '_' or the opponent's piece, there are no pieces blocking route
-                     - End square is on the chess board
-                     - Can move (within the range of the board):
-                                - horizontally or vertically, forwards and backwards
-                                - diagonally forwards or backwards
-
-        Capture:     - Opponent's piece on end square
-
-        If move is vaild, returns True otherwise returns False 
-        """
-        start_row, start_column = start_coord
-        end_row, end_column = end_coord
-
-        row_result = end_row - start_row
-        column_result = end_column - start_column
-
-        if abs(column_result) == abs(row_result): #bishop functionality 
-            if column_result > 0 and row_result < 0:   #moving down + left
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(column_result)):
-                        if self._game_board[start_column + pos][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'q'
-                    return True
-                
-                check_opponent = self._game_board[end_column][end_row].isupper()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column + pos][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                        
-                    return self.white_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-                
-            if column_result > 0 and row_result > 0:   #moving down + right
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(column_result)):
-                        if self._game_board[start_column + pos][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'q'
-                    return True
-                
-                check_opponent = self._game_board[end_column][end_row].isupper()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column + pos][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                        
-                    return self.white_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False 
-                
-            if column_result < 0 and row_result < 0 : #moving up + left
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column - pos][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'q'
-                    return True
-                    
-                check_opponent = self._game_board[end_column][end_row].isupper()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column - pos][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                    return self.white_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-
-            else:                        # moving up and right                                       #check column
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(row_result)):
-                        if self._game_board[start_column - pos][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'q'
-                    return True
-                
-                check_opponent = self._game_board[end_column][end_row].isupper()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(row_result)-1):
-                        if self._game_board[start_column - pos][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                        
-                    return self.white_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-                
-        # rook functionality   
-        if (row_result == 0 and abs(column_result) > 0) or (abs(row_result) > 0 and column_result == 0): 
-            if row_result == 0:                             # check_row
-                if column_result < 0:   #moving up
-                    if self._game_board[end_column][end_row] == '_':
-                        pos = 1
-                        for _ in range(abs(column_result)):
-                            if self._game_board[start_column - pos][start_row] == '_':
-                                pos += 1
-                            else:
-                                return False
-                    
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'q'
-                        return True
-                    check_opponent = self._game_board[end_column][end_row].isupper()
-                    if check_opponent is True:
-                        pos = 1
-                        for _ in range(abs(column_result)-1):
-                            if self._game_board[start_column - pos][start_row] == '_':
-                                pos += 1
-                            else:
-                                return False
-                            
-                        return self.white_capture(start_column, start_row, end_column, end_row)
-                    else:
-                        return False
-
-                else: #moving down
-                    if self._game_board[end_column][end_row] == '_':
-                        pos = 1
-                        for _ in range(abs(column_result)-1):
-                            if self._game_board[start_column + pos][start_row] == '_':
-                                pos += 1
-                            else:
-                                return False
-                    
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'q'
-                        return True
-                        
-                    check_opponent = self._game_board[end_column][end_row].isupper()
-                    if check_opponent is True:
-                        pos = 1
-                        for _ in range(abs(column_result)-1):
-                            if self._game_board[start_column + pos][start_row] == '_':
-                                pos += 1
-                            else:
-                                return False
-
-                        return self.white_capture(start_column, start_row, end_column, end_row)
-                    else:
-                        return False
-          
-            else:
-                if row_result < 0:   #moving left 
-                    if self._game_board[end_column][end_row] == '_':
-                        pos = 1
-                        for _ in range(abs(row_result)):
-                            if self._game_board[start_column][start_row - pos] == '_':
-                                pos += 1
-                            else:
-                                return False
-                    
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'q'
-                        return True
-                    
-                    check_opponent = self._game_board[end_column][end_row].isupper()
-                    if check_opponent is True:
-                        pos = 1
-                        for _ in range(abs(row_result)-1):
-                            if self._game_board[start_column][start_row - pos] == '_':
-                                pos += 1
-                            else:
-                                return False
-                            
-                        return self.white_capture(start_column, start_row, end_column, end_row)
-                    else:
-                        return False
-                    
-                else: #moving right
-                    if self._game_board[end_column][end_row] == '_':
-                        pos = 1
-                        for _ in range(abs(row_result)-1):
-                            if self._game_board[start_column][start_row + pos] == '_':
-                                pos += 1
-                            else:
-                                return False
-                    
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'q'
-                        return True
-                        
-                    check_opponent = self._game_board[end_column][end_row].isupper()
-                    if check_opponent is True:
-                        pos = 1
-                        for _ in range(abs(row_result)-1):
-                            if self._game_board[start_column][start_row + pos] == '_':
-                                pos += 1
-                            else:
-                                return False
-                            
-                        return self.white_capture(start_column, start_row, end_column, end_row)
-                    else:
-                        return False
-        else:
-            return False
-        
-    def move_black_king(self, start_coord, end_coord):  
-        """
-        Black King: 'k', 1
-        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
-        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'k'
-        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
-        If the piece captured is the only piece or only remaining piece, the game state is updated to 'BLACK_WON'
-        
-        Valid moves: - End square is empty '_' or the opponent's piece, there are no pieces blocking route
-                     - End square is on the chess board
-                     - Can move one square:
-                                - horizontally or vertically, forwards and backwards
-                                - diagonally forwards or backwards
-
-        Capture:     - Opponent's piece on end square
-
-        If move is vaild, returns True otherwise returns False 
-        """
-        start_row, start_column = start_coord
-        end_row, end_column = end_coord
-
-        row_result = end_row - start_row
-        column_result = end_column - start_column
-        
-        if abs(column_result) > 1:
-            return False
-        if abs(row_result) > 1: 
-            return False
-
-        if self._game_board[end_column][end_row] == '_':            # up, down
-            if abs(column_result) == 1 and row_result == 0:
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'k'
-                return True
-            if column_result == 0 and abs(row_result) == 1:         # left, right
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'k'
-                return True
-            if abs(column_result) == 1 and abs(row_result) == 1:         # diagonal 
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'k'
-                return True
-            
-        check_opponent = self._game_board[end_column][end_row].isupper()
-        if check_opponent is True:
-            return self.white_capture(start_column, start_row, end_column, end_row)
-        else:
-            return False
-
     def move_white_pawn(self, start_coord, end_coord):
         """
         White Pawn: 'P', 8
@@ -1034,608 +369,23 @@ class ChessVar:
         
         else:
             return False
-
-    def move_white_knight(self, start_coord, end_coord):
-        """
-        White Knight: 'N', 2
-        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
-        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'N'
-        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
-        If the piece captured is the only piece or only remaining piece, the game state is updated to 'WHITE_WON'
         
-        Valid moves: - End square is empty '_' or the opponent's piece
-                     - End square is on the chess board
-                     - Can move (L):
-                            - forward one square, left or right two squares
-                            - backward one square, left or right two squares
-                            - forward two squares, left or right one square
-                            - backward two sqaures, left or right one square
-
-        Capture:     - Opponent's piece on end square
-
-        If move is vaild, returns True otherwise returns False 
-        """
-        start_row, start_column = start_coord
-        end_row, end_column = end_coord
-
-        row_result = end_row - start_row
-        column_result = end_column - start_column
-
-        if abs(column_result) > 2 or abs(row_result) > 2:
-            return False
-        
-        if self._game_board[end_column][end_row] == '_':
-            if abs(column_result) == 1 and abs(row_result) == 2:
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'N'
-                return True
-            
-            if abs(column_result) == 2 and abs(row_result) == 1:
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'N'
-                return True
-            else:
-                return False
-        
-        check_opponent = self._game_board[end_column][end_row].islower()
-        if check_opponent is True:
-            return self.black_capture(start_column, start_row, end_column, end_row)
-        else:
-            return False
-        
-    def move_white_bishop(self, start_coord, end_coord):
-        """
-        White Bishop:'B', 2
-        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
-        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'B'
-        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
-        If the piece captured is the only piece or only remaining piece, the game state is updated to 'WHITE_WON'
-        
-        Valid moves: - End square is empty '_' or the opponent's piece, there are no pieces blocking route
-                     - End square is on the chess board
-                     - Can move diagonally forwards and backwards
-
-        Capture:     - Opponent's piece on end square
-
-        If move is vaild, returns True otherwise returns False 
-        """
-        start_row, start_column = start_coord
-        end_row, end_column = end_coord
-
-        row_result = end_row - start_row
-        column_result = end_column - start_column
-
-        if abs(column_result) == 0 and abs(row_result) != 0: #vert/horz check
-            return False
-        if abs(column_result) != 0 and abs(row_result) == 0:
-            return False
-        
-        if abs(column_result) != abs(row_result):
-            return False
-
-        #if column_result > 0:                             
-        if column_result > 0 and row_result < 0:   #moving down + left
-            if self._game_board[end_column][end_row] == '_':
-                pos = 1
-                for _ in range(abs(column_result)):
-                    if self._game_board[start_column + pos][start_row - pos] == '_':
-                        pos += 1
-                    else:
-                        return False
-            
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'B'
-                return True
-            
-            check_opponent = self._game_board[end_column][end_row].islower()
-            if check_opponent is True:
-                pos = 1
-                for _ in range(abs(column_result)-1):
-                    if self._game_board[start_column + pos][start_row - pos] == '_':
-                        pos += 1
-                    else:
-                        return False
-                return self.black_capture(start_column, start_row, end_column, end_row)
-            else:
-                return False
-            
-        if column_result > 0 and row_result > 0:   #moving down + right
-            if self._game_board[end_column][end_row] == '_':
-                pos = 1
-                for _ in range(abs(column_result)):
-                    if self._game_board[start_column + pos][start_row + pos] == '_':
-                        pos += 1
-                    else:
-                        return False
-            
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'B'
-                return True
-            
-            check_opponent = self._game_board[end_column][end_row].islower()
-            if check_opponent is True:
-                pos = 1
-                for _ in range(abs(column_result)-1):
-                    if self._game_board[start_column + pos][start_row + pos] == '_':
-                        pos += 1
-                    else:
-                        return False
-                return self.black_capture(start_column, start_row, end_column, end_row)
-            else:
-                return False
-            
-        if column_result < 0 and row_result < 0 : #moving up + left
-            if self._game_board[end_column][end_row] == '_':
-                pos = 1
-                for _ in range(abs(column_result)-1):
-                    if self._game_board[start_column - pos][start_row - pos] == '_':
-                        pos += 1
-                    else:
-                        return False
-            
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'B'
-                return True
-                
-            check_opponent = self._game_board[end_column][end_row].islower()
-            if check_opponent is True:
-                pos = 1
-                for _ in range(abs(column_result)-1):
-                    if self._game_board[start_column - pos][start_row - pos] == '_':
-                        pos += 1
-                    else:
-                        return False
-                    
-                return self.black_capture(start_column, start_row, end_column, end_row)
-            else:
-                return False
-
-        else:                        # moving up and right                                       #check column
-            if self._game_board[end_column][end_row] == '_':
-                pos = 1
-                for _ in range(abs(row_result)):
-                    if self._game_board[start_column - pos][start_row + pos] == '_':
-                        pos += 1
-                    else:
-                        return False
-            
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'B'
-                return True
-            
-            check_opponent = self._game_board[end_column][end_row].islower()
-            if check_opponent is True:
-                pos = 1
-                for _ in range(abs(row_result)-1):
-                    if self._game_board[start_column - pos][start_row + pos] == '_':
-                        pos += 1
-                    else:
-                        return False
-                return self.black_capture(start_column, start_row, end_column, end_row)
-            else:
-                return False
-
-    def move_white_rook(self, start_coord, end_coord):
-        """
-        White Rook: 'R', 2
-        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
-        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'R'
-        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
-        If the piece captured is the only piece or only remaining piece, the game state is updated to 'WHITE_WON'
-        
-        Valid moves: - End square is empty '_' or the opponent's piece, there are no pieces blocking route
-                     - End square is on the chess board
-                     - Can move horizontally and vertically forwards and backwards:
-
-        Capture:     - Opponent's piece on end square
-
-        If move is vaild, returns True otherwise returns False 
-        """
-        start_row, start_column = start_coord
-        end_row, end_column = end_coord
-
-        row_result = end_row - start_row
-        column_result = end_column - start_column
-
-        if abs(column_result) > 0 and abs(row_result) > 0: #diagonal check
-            return False
-            
-        if row_result == 0:                             # check_row
-            if column_result < 0:   #moving up
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(column_result)):
-                        if self._game_board[start_column - pos][start_row] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'R'
-                    return True
-                
-                check_opponent = self._game_board[end_column][end_row].islower()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column - pos][start_row] == '_':
-                            pos += 1
-                        else:
-                            return False
-                        
-                    return self.black_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-                
-            else: #moving down
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column + pos][start_row] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'R'
-                    return True
-                    
-                check_opponent = self._game_board[end_column][end_row].islower()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column + pos][start_row] == '_':
-                            pos += 1
-                        else:
-                            return False
-                    return self.black_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-    
-        else:           #check column
-            if row_result < 0:   #moving left 
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(row_result)):
-                        if self._game_board[start_column][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'R'
-                    return True
-                
-                check_opponent = self._game_board[end_column][end_row].islower()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(row_result)-1):
-                        if self._game_board[start_column][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                    return self.black_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-                
-            else: #moving right
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(row_result)-1):
-                        if self._game_board[start_column][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'R'
-                    return True
-                    
-                check_opponent = self._game_board[end_column][end_row].islower()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(row_result)-1):
-                        if self._game_board[start_column][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                    return self.black_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-
-    def move_white_queen(self, start_coord, end_coord):
-        """
-        White Queen: 'Q', 1
-        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
-        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'Q'
-        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
-        If the piece captured is the only piece or only remaining piece, the game state is updated to 'WHITE_WON'
-        
-        Valid moves: - End square is empty '_' or the opponent's piece, there are no pieces blocking route
-                     - End square is on the chess board
-                     - Can move:
-                                - horizontally and vertically forwards and backwards
-                                - diagonally forwards and backwards
-
-        Capture:     - Opponent's piece on end square
-
-        If move is vaild, returns True otherwise returns False 
-        """
-        start_row, start_column = start_coord
-        end_row, end_column = end_coord
-
-        row_result = end_row - start_row
-        column_result = end_column - start_column
-        
-        if abs(column_result) == abs(row_result): #bishop functionality 
-            if column_result > 0 and row_result < 0:   #moving down + left
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(column_result)):
-                        if self._game_board[start_column + pos][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'Q'
-                    return True
-                
-                check_opponent = self._game_board[end_column][end_row].islower()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column + pos][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                        
-                    return self.black_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-                
-            if column_result > 0 and row_result > 0:   #moving down + right
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(column_result)):
-                        if self._game_board[start_column + pos][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'Q'
-                    return True
-                
-                check_opponent = self._game_board[end_column][end_row].islower()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column + pos][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                        
-                    return self.black_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-                
-            if column_result < 0 and row_result < 0 : #moving up + left
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column - pos][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'Q'
-                    return True
-                    
-                check_opponent = self._game_board[end_column][end_row].islower()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(column_result)-1):
-                        if self._game_board[start_column - pos][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                    return self.black_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-
-            else:                        # moving up and right                                       #check column
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(row_result)):
-                        if self._game_board[start_column - pos][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                
-                    self._game_board[start_column][start_row] = '_'
-                    self._game_board[end_column][end_row] = 'Q'
-                    return True
-                
-                check_opponent = self._game_board[end_column][end_row].islower()
-                if check_opponent is True:
-                    pos = 1
-                    for _ in range(abs(row_result)-1):
-                        if self._game_board[start_column - pos][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-                        
-                    return self.black_capture(start_column, start_row, end_column, end_row)
-                else:
-                    return False
-                      
-        # rook functionality   
-        if (row_result == 0 and abs(column_result) > 0) or (abs(row_result) > 0 and column_result == 0): 
-            if row_result == 0:                             # check_row
-                if column_result < 0:   #moving up
-                    if self._game_board[end_column][end_row] == '_':
-                        pos = 1
-                        for _ in range(abs(column_result)):
-                            if self._game_board[start_column - pos][start_row] == '_':
-                                pos += 1
-                            else:
-                                return False
-                    
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'Q'
-                        return True
-                    check_opponent = self._game_board[end_column][end_row].islower()
-                    if check_opponent is True:
-                        pos = 1
-                        for _ in range(abs(column_result)-1):
-                            if self._game_board[start_column - pos][start_row] == '_':
-                                pos += 1
-                            else:
-                                return False
-                            
-                        return self.black_capture(start_column, start_row, end_column, end_row)
-                    else:
-                        return False
-                    
-                else: #moving down
-                    if self._game_board[end_column][end_row] == '_':
-                        pos = 1
-                        for _ in range(abs(column_result)-1):
-                            if self._game_board[start_column + pos][start_row] == '_':
-                                pos += 1
-                            else:
-                                return False
-                    
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'Q'
-                        return True
-                        
-                    check_opponent = self._game_board[end_column][end_row].islower()
-                    if check_opponent is True:
-                        pos = 1
-                        for _ in range(abs(column_result)-1):
-                            if self._game_board[start_column + pos][start_row] == '_':
-                                pos += 1
-                            else:
-                                return False
-                            
-                        return self.black_capture(start_column, start_row, end_column, end_row)
-                    else:
-                        return False
-                    
-            else:
-                if row_result < 0:   #moving left 
-                    if self._game_board[end_column][end_row] == '_':
-                        pos = 1
-                        for _ in range(abs(row_result)):
-                            if self._game_board[start_column][start_row - pos] == '_':
-                                pos += 1
-                            else:
-                                return False
-                    
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'Q'
-                        return True
-                    
-                    check_opponent = self._game_board[end_column][end_row].lower()
-                    if check_opponent is True:
-                        pos = 1
-                        for _ in range(abs(row_result)-1):
-                            if self._game_board[start_column][start_row - pos] == '_':
-                                pos += 1
-                            else:
-                                return False
-                            
-                        return self.black_capture(start_column, start_row, end_column, end_row)
-                    else:
-                        return False
-
-                else: #moving right
-                    if self._game_board[end_column][end_row] == '_':
-                        pos = 1
-                        for _ in range(abs(row_result)-1):
-                            if self._game_board[start_column][start_row + pos] == '_':
-                                pos += 1
-                            else:
-                                return False
-                    
-                        self._game_board[start_column][start_row] = '_'
-                        self._game_board[end_column][end_row] = 'Q'
-                        return True
-                        
-                    check_opponent = self._game_board[end_column][end_row].islower()
-                    if check_opponent is True:
-                        pos = 1
-                        for _ in range(abs(row_result)-1):
-                            if self._game_board[start_column][start_row + pos] == '_':
-                                pos += 1
-                            else:
-                                return False
-                            
-                        return self.black_capture(start_column, start_row, end_column, end_row)
-                    else:
-                        return False
-        else:
-            return False
-
-    def move_white_king(self, start_coord, end_coord):
-        """
-        White King: 'K', 1
-        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
-        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 'K'
-        for black pawn. If a piece is captured, the opponents' dictionary is decremented by 1 for the corresponding piece
-        If the piece captured is the only piece or only remaining piece, the game state is updated to 'WHITE_WON'
-        
-        Valid moves: - End square is empty '_' or the opponent's piece, there are no pieces blocking route
-                     - End square is on the chess board
-                     - Can move one square:
-                                - horizontally or vertically, forwards and backwards
-                                - diagonally forwards or backwards
-
-        Capture:     - Opponent's piece on end square
-
-        If move is vaild, returns True otherwise returns False 
-        """
-        start_row, start_column = start_coord
-        end_row, end_column = end_coord
-
-        row_result = end_row - start_row
-        column_result = end_column - start_column
-
-       # if abs(column_result) == abs(row_result): #diagonal 
-
-        if abs(column_result) > 1:
-            return False
-        if abs(row_result) > 1: 
-            return False
-
-        
-        if self._game_board[end_column][end_row] == '_':            # up, down
-            if abs(column_result) == 1 and row_result == 0:
-                self._game_board[start_column][start_row], self._game_board[end_column][end_row] = self._game_board[end_column][end_row], self._game_board[start_column][start_row]
-                #self._game_board[start_column][start_row] = '_'
-                #self._game_board[end_column][end_row] = 'K'
-                return True
-            if column_result == 0 and abs(row_result) == 1:         # left, right
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'K'
-                return True
-            if abs(column_result) == 1 and abs(row_result) == 1:         # diagonal 
-                self._game_board[start_column][start_row] = '_'
-                self._game_board[end_column][end_row] = 'K'
-                return True
-            
-        check_opponent = self._game_board[end_column][end_row].islower()
-        if check_opponent is True:
-            return self.black_capture(start_column, start_row, end_column, end_row)
-        else:
-            return False
-
     def move_bishop(self, start_coord, end_coord):
         """
-        Generalized method to move bishop 
+        White bishop: 'B', 2 | Black bishop: 'b', 2
+        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
+        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position 
+        to the appropriate bishop. If a piece is captured, the opponents' dictionary is decremented by 1 for the 
+        corresponding piece. If the piece captured is the only piece or only remaining piece, the game state is 
+        updated to the current player won. 
+        
+        Valid moves: - End square is empty '_' or the opponent's piece, there are no pieces blocking route
+                     - End square is on the chess board
+                     - Can move diagonally forwards or backwards:
+
+        Capture:     - Opponent's piece on end square
+
+        If move is vaild, returns True otherwise returns False  
         """
         start_row, start_column = start_coord
         end_row, end_column = end_coord
@@ -1766,7 +516,24 @@ class ChessVar:
 
     def move_knight(self, start_coord, end_coord):
         """
-        Generalized method to move a knight 
+        White Knight:'N', 2 | Black Knight: 'n', 2
+        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
+        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to
+        the appropriate knight. If a piece is captured, the opponents' dictionary is decremented by 1 for the 
+        corresponding piece. If the piece captured is the only piece or only remaining piece, the game state is 
+        updated to the winning current player
+        
+        Valid moves: - End square is empty '_' or the opponent's piece
+                     - End square is on the chess board
+                     - Can move (L):
+                            - forward one square, left or right two squares
+                            - backward one square, left or right two squares
+                            - forward two squares, left or right one square
+                            - backward two sqaures, left or right one square
+
+        Capture:     - Opponent's piece on end square
+
+        If move is vaild, returns True otherwise returns False  
         """
         start_row, start_column = start_coord
         end_row, end_column = end_coord
@@ -1799,7 +566,20 @@ class ChessVar:
 
     def move_rook(self, start_coord, end_coord):
         """
-        Generalized method to move rook
+        White Rook, 'R', 2 | Black Rook: 'r', 2
+        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
+        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position 
+        to the appropriate rook. If a piece is captured, the opponents' dictionary is decremented by 1 for the 
+        corresponding piece. If the piece captured is the only piece or only remaining piece, the game state is
+        updated to the current player won.
+        
+        Valid moves: - End square is empty '_' or the opponent's piece, there are no pieces blocking route
+                     - End square is on the chess board
+                     - Can move horizontally and vertically forwards and backwards:
+
+        Capture:     - Opponent's piece on end square
+
+        If move is vaild, returns True otherwise returns False 
         """
         start_row, start_column = start_coord
         end_row, end_column = end_coord
@@ -1927,7 +707,22 @@ class ChessVar:
 
     def move_queen(self, start_coord, end_coord):
         """
-        Generalized method to move queen
+        White Queen, 'Q', 1 | Black Queen: 'q', 1
+        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
+        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 
+        appropriate queen. If a piece is captured, the opponents' dictionary is decremented by 1 for the 
+        corresponding piece. If the piece captured is the only piece or only remaining piece, the game state is 
+        updated to the current player won.
+        
+        Valid moves: - End square is empty '_' or the opponent's piece, there are no pieces blocking route
+                     - End square is on the chess board
+                     - Can move (within the range of the board):
+                                - horizontally or vertically, forwards and backwards
+                                - diagonally forwards or backwards
+
+        Capture:     - Opponent's piece on end square
+
+        If move is vaild, returns True otherwise returns False
         """
         start_row, start_column = start_coord
         end_row, end_column = end_coord
@@ -2168,7 +963,22 @@ class ChessVar:
 
     def move_king(self, start_coord, end_coord):
         """
-        Generalized method to move king
+        White King, 'K', 1 | Black King: 'k', 1
+        Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid 
+        or invalid. If a move is valid it changes the start position to an empy square '_' and the end position to 
+        the appropriate king. If a piece is captured, the opponents' dictionary is decremented by 1 for the 
+        corresponding piece. If the piece captured is the only piece or only remaining piece, the game state is 
+        updated to current player won. 
+        
+        Valid moves: - End square is empty '_' or the opponent's piece, there are no pieces blocking route
+                     - End square is on the chess board
+                     - Can move one square:
+                                - horizontally or vertically, forwards and backwards
+                                - diagonally forwards or backwards
+
+        Capture:     - Opponent's piece on end square
+
+        If move is vaild, returns True otherwise returns False 
         """
         start_row, start_column = start_coord
         end_row, end_column = end_coord
@@ -2216,25 +1026,9 @@ def main():
     
     cv = ChessVar()
 
-    print(cv.make_move('a2', 'a4'))
-    #print(cv.get_game_state())
-
-    #print(cv.make_move('b3', 'a4'))
-
-    #print(cv.make_move('c3', 'e2'))
-
-    #print(cv.make_move('a5', 'a4'))
-
-   # print(cv.make_move('e3', 'd4'))
-
-    #print(cv.make_move('g8', 'f6'))
-
-   # print(cv.make_move('b4', 'b3'))  
-   # print(cv.make_move('b8', 'c6'))
-
-   # print(cv.make_move('e5', 'f6'))
-
-   # print(cv.make_move('c6', 'b8'))
+    cv.make_move('e2', 'e4')
+    cv.make_move('d7', 'd5')
+    cv.make_move('b1', 'c3')
     cv.print_board()
 
     print(cv._black_dict, cv._white_dict)
