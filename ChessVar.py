@@ -630,201 +630,11 @@ class ChessVar:
         column_result = end_column - start_column
 
         if abs(column_result) == abs(row_result):  # bishop functionality
-            if column_result > 0 and row_result < 0:  # moving down + left
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(column_result)):
-                        if self._game_board[start_column + pos][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
+            return self.move_bishop(start_coord, end_coord)
 
-                    self._game_board[start_column][start_row], self._game_board[end_column][end_row] = \
-                        self._game_board[end_column][end_row], self._game_board[start_column][start_row]
-                    return True
-
-                end_square = self._game_board[end_column][end_row]
-                if end_square != '_':
-                    pos = 1
-                    for _ in range(abs(column_result) - 1):
-                        if self._game_board[start_column + pos][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-
-                    return self.capture_piece(start_column, start_row, end_column, end_row)
-
-            if column_result > 0 and row_result > 0:  # moving down + right
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(column_result)):
-                        if self._game_board[start_column + pos][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-
-                    self._game_board[start_column][start_row], self._game_board[end_column][end_row] = \
-                        self._game_board[end_column][end_row], self._game_board[start_column][start_row]
-                    return True
-
-                end_square = self._game_board[end_column][end_row]
-                if end_square != '_':
-                    pos = 1
-                    for _ in range(abs(column_result) - 1):
-                        if self._game_board[start_column + pos][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-
-                    return self.capture_piece(start_column, start_row, end_column, end_row)
-
-            if column_result < 0 and row_result < 0:  # moving up + left
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(column_result) - 1):
-                        if self._game_board[start_column - pos][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-
-                    self._game_board[start_column][start_row], self._game_board[end_column][end_row] = \
-                        self._game_board[end_column][end_row], self._game_board[start_column][start_row]
-                    return True
-
-                end_square = self._game_board[end_column][end_row]
-                if end_square != '_':
-                    pos = 1
-                    for _ in range(abs(column_result) - 1):
-                        if self._game_board[start_column - pos][start_row - pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-
-                    return self.capture_piece(start_column, start_row, end_column, end_row)
-
-            else:  # moving up and right                                       #check column
-                if self._game_board[end_column][end_row] == '_':
-                    pos = 1
-                    for _ in range(abs(row_result)):
-                        if self._game_board[start_column - pos][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-
-                    self._game_board[start_column][start_row], self._game_board[end_column][end_row] = \
-                        self._game_board[end_column][end_row], self._game_board[start_column][start_row]
-                    return True
-
-                end_square = self._game_board[end_column][end_row]
-                if end_square != '_':
-                    pos = 1
-                    for _ in range(abs(row_result) - 1):
-                        if self._game_board[start_column - pos][start_row + pos] == '_':
-                            pos += 1
-                        else:
-                            return False
-
-                    return self.capture_piece(start_column, start_row, end_column, end_row)
-
-                        # rook functionality
+        # rook functionality
         if (row_result == 0 and abs(column_result) > 0) or (abs(row_result) > 0 and column_result == 0):
-            if row_result == 0:  # check_row
-                if column_result < 0:  # moving up
-                    if self._game_board[end_column][end_row] == '_':
-                        pos = 1
-                        for _ in range(abs(column_result)):
-                            if self._game_board[start_column - pos][start_row] == '_':
-                                pos += 1
-                            else:
-                                return False
-
-                        self._game_board[start_column][start_row], self._game_board[end_column][end_row] = \
-                            self._game_board[end_column][end_row], self._game_board[start_column][start_row]
-                        return True
-
-                    end_square = self._game_board[end_column][end_row]
-                    if end_square != '_':
-                        pos = 1
-                        for _ in range(abs(column_result) - 1):
-                            if self._game_board[start_column - pos][start_row] == '_':
-                                pos += 1
-                            else:
-                                return False
-
-                        return self.capture_piece(start_column, start_row, end_column, end_row)
-
-                else:  # moving down
-                    if self._game_board[end_column][end_row] == '_':
-                        pos = 1
-                        for _ in range(abs(column_result) - 1):
-                            if self._game_board[start_column + pos][start_row] == '_':
-                                pos += 1
-                            else:
-                                return False
-
-                        self._game_board[start_column][start_row], self._game_board[end_column][end_row] = \
-                            self._game_board[end_column][end_row], self._game_board[start_column][start_row]
-                        return True
-
-                    end_square = self._game_board[end_column][end_row]
-                    if end_square != '_':
-                        pos = 1
-                        for _ in range(abs(column_result) - 1):
-                            if self._game_board[start_column + pos][start_row] == '_':
-                                pos += 1
-                            else:
-                                return False
-
-                        return self.capture_piece(start_column, start_row, end_column, end_row)
-
-            else:
-                if row_result < 0:  # moving left
-                    if self._game_board[end_column][end_row] == '_':
-                        pos = 1
-                        for _ in range(abs(row_result)):
-                            if self._game_board[start_column][start_row - pos] == '_':
-                                pos += 1
-                            else:
-                                return False
-
-                        self._game_board[start_column][start_row], self._game_board[end_column][end_row] = \
-                            self._game_board[end_column][end_row], self._game_board[start_column][start_row]
-                        return True
-
-                    end_square = self._game_board[end_column][end_row]
-                    if end_square != '_':
-                        pos = 1
-                        for _ in range(abs(row_result)):
-                            if self._game_board[start_column][start_row - pos] == '_':
-                                pos += 1
-                            else:
-                                return False
-
-                        return self.capture_piece(start_column, start_row, end_column, end_row)
-
-                else:  # moving right
-                    if self._game_board[end_column][end_row] == '_':
-                        pos = 1
-                        for _ in range(abs(row_result) - 1):
-                            if self._game_board[start_column][start_row + pos] == '_':
-                                pos += 1
-                            else:
-                                return False
-
-                        self._game_board[start_column][start_row], self._game_board[end_column][end_row] = \
-                            self._game_board[end_column][end_row], self._game_board[start_column][start_row]
-                        return True
-
-                    end_square = self._game_board[end_column][end_row]
-                    if end_square != '_':
-                        pos = 1
-                        for _ in range(abs(row_result) - 1):
-                            if self._game_board[start_column][start_row + pos] == '_':
-                                pos += 1
-                            else:
-                                return False
-
-                        return self.capture_piece(start_column, start_row, end_column, end_row)
+            return self.move_rook(start_coord, end_coord)
 
         else:
             return False
@@ -859,24 +669,15 @@ class ChessVar:
         if abs(row_result) > 1:
             return False
 
-        if self._game_board[end_column][end_row] == '_':  # up, down
-            if abs(column_result) == 1 and row_result == 0:
-                self._game_board[start_column][start_row], self._game_board[end_column][end_row] = \
-                    self._game_board[end_column][end_row], self._game_board[start_column][start_row]
-                return True
-            if column_result == 0 and abs(row_result) == 1:  # left, right
-                self._game_board[start_column][start_row], self._game_board[end_column][end_row] = \
-                    self._game_board[end_column][end_row], self._game_board[start_column][start_row]
-                return True
-            if abs(column_result) == 1 and abs(row_result) == 1:  # diagonal
-                self._game_board[start_column][start_row], self._game_board[end_column][end_row] = \
-                    self._game_board[end_column][end_row], self._game_board[start_column][start_row]
-                return True
+        if abs(column_result) == abs(row_result):  # bishop functionality
+            return self.move_bishop(start_coord, end_coord)
 
-        end_square = self._game_board[end_column][end_row]
-        if end_square != '_':
-            return self.capture_piece(start_column, start_row, end_column, end_row)
+        # rook functionality
+        if (row_result == 0 and abs(column_result) > 0) or (abs(row_result) > 0 and column_result == 0):
+            return self.move_rook(start_coord, end_coord)
 
+        else:
+            return False
 
 def main():
     initial_board = [
