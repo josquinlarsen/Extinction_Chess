@@ -29,8 +29,6 @@ class ChessVar:
                             ['\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659'],
                             ['\u2656', '\u2658', '\u2657', '\u2655', '\u2654', '\u2657', '\u2658', '\u2656']]
 
-        self._white_dict = {'K': 1, 'Q': 1, 'R': 2, 'B': 2, 'N': 2, 'P': 8}
-        self._black_dict = {'k': 1, 'q': 1, 'r': 2, 'b': 2, 'n': 2, 'p': 8}
         self._algebra_dict = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
         self._tally_dict = {'WHITE': {'\u2654': 1, '\u2655': 1, '\u2656': 2, '\u2657': 2, '\u2658': 2, '\u2659': 8}, 
                             'BLACK': {'\u265a': 1, '\u265b': 1, '\u265c': 2, '\u265d': 2, '\u265e': 2, '\u265f': 8}}
@@ -201,26 +199,6 @@ class ChessVar:
         if piece == self._pieces[player]['king']:
             return self.move_king(start_coord, end_coord)
             
-        """
-        if piece == 'p' or piece == 'P':
-            return self.move_pawn(start_coord, end_coord)
-
-        if piece == 'n' or piece == 'N':
-            return self.move_knight(start_coord, end_coord)
-
-        if piece == 'b' or piece == 'B':
-            return self.move_bishop(start_coord, end_coord)
-
-        if piece == 'r' or piece == 'R':
-            return self.move_rook(start_coord, end_coord)
-
-        if piece == 'q' or piece == 'Q':
-            return self.move_queen(start_coord, end_coord)
-
-        if piece == 'k' or piece == 'K':
-            return self.move_king(start_coord, end_coord)
-        """
-
     def capture_piece(self, start_column: int, start_row: int, end_column: int, end_row: int) -> bool:
         """
        Method which takes four parameters, the starting and end coordinates, and 'captures' opponent's
@@ -231,17 +209,12 @@ class ChessVar:
 
        Returns True or False
         """
-        
-       
         if self.get_move_state() == 'WHITE':
             captured_piece = self._game_board[end_column][end_row]
             self._tally_dict['BLACK'][captured_piece] -= 1
             if self._tally_dict['BLACK'][captured_piece] == 0:
                 self.set_game_state('WHITE_WON')
-           # self._black_dict[captured_piece] -= 1
-            #if self._black_dict[captured_piece] == 0:
-             #   self.set_game_state('WHITE_WON')
-
+         
             self._game_board[end_column][end_row] = self._game_board[start_column][start_row]
             self._game_board[start_column][start_row] = '_'
 
@@ -253,17 +226,13 @@ class ChessVar:
             self._tally_dict['WHITE'][captured_piece] -= 1
             if self._tally_dict['WHITE'][captured_piece] == 0:
                 self.set_game_state('BLACK_WON')
-           # self._white_dict[captured_piece] -= 1
-           # if self._white_dict[captured_piece] == 0:
-            #    self.set_game_state('BLACK_WON')
-
+     
             self._game_board[end_column][end_row] = self._game_board[start_column][start_row]
             self._game_board[start_column][start_row] = '_'
 
             return True
 
-        else:
-            return False
+        return False
 
     def move_pawn(self, start_coord: tuple, end_coord: tuple) -> bool:
         """
@@ -385,8 +354,8 @@ class ChessVar:
                 self._game_board[start_column][start_row], self._game_board[end_column][end_row] = \
                     self._game_board[end_column][end_row], self._game_board[start_column][start_row]
                 return True
-            else:
-                return False
+            
+            return False
 
         end_square = self._game_board[end_column][end_row]
         if end_square != '_':
@@ -676,8 +645,8 @@ class ChessVar:
         if (row_result == 0 and abs(column_result) > 0) or (abs(row_result) > 0 and column_result == 0):
             return self.move_rook(start_coord, end_coord)
 
-        else:
-            return False
+        
+        return False
 
     def move_king(self, start_coord: tuple, end_coord: tuple) -> bool:
         """
@@ -717,8 +686,8 @@ class ChessVar:
         if (row_result == 0 and abs(column_result) > 0) or (abs(row_result) > 0 and column_result == 0):
             return self.move_rook(start_coord, end_coord)
 
-        else:
-            return False
+        
+        return False
 
 
 def main():
