@@ -64,13 +64,14 @@ class ChessVar:
 
         if len(position) != 2:  # out-of-bounds tests
             letter_column = -1
+            return False
 
         check_alpha = position[0].isalpha()
-        if check_alpha is not True:
+        if check_alpha is False:
             letter_column = -1
-
+            
         check_num = position[1].isdigit()
-        if check_num is not True:
+        if check_num is False:
             letter_column = -1
 
         if position[0] not in self._algebra_dict:
@@ -104,6 +105,12 @@ class ChessVar:
         """
         start_coord = self.convert_algebraic(start_pos)
         end_coord = self.convert_algebraic(end_pos)
+
+        if start_coord is False:
+            return False
+        if end_coord is False:
+            return False
+
         start_row, start_column = start_coord
         end_row, end_column = end_coord
 
