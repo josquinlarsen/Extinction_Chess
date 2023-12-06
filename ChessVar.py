@@ -54,36 +54,34 @@ class ChessVar:
         Method that takes a parameter of a string in algebraic notation (e.g. 'a7') and converts that
         to coordinates (0, 1). To align with a chess board the first coordinate refers to the columns
         A - H converted A = 0 to H = 7. Rows are in reverse order where '_1' = (_, 7) to '_8' = (_, 0)
-        if a letter or number is out of bounds method returns -1 otherwise  returns tuple of  integer
-        coordinates (0,1) tuple for unpacking as 2d array coordinates
+        if a letter or number is out of bounds, method returns False otherwise returns tuple of integer
+        coordinates (0,1) for unpacking as 2d array coordinates.
 
-        Returns (x, y)
+        Returns (x, y) or False
         """
         letter_column = 0
         number_row = 0
 
         if len(position) != 2:  # out-of-bounds tests
-            letter_column = -1
             return False
 
         check_alpha = position[0].isalpha()
         if check_alpha is False:
-            letter_column = -1
-            
+            return False
+
         check_num = position[1].isdigit()
         if check_num is False:
-            letter_column = -1
+            return False
 
         if position[0] not in self._algebra_dict:
-            letter_column = -1
+            return False
 
         if letter_column < 0 or letter_column >= 8:
-            letter_column = -1
+            return False
 
-        else:  # valid algebraic notation for conversion
-            if position[0] in self._algebra_dict:
-                letter_column += (self._algebra_dict[position[0]])
-                number_row += 8 - (int(position[1]))
+        if position[0] in self._algebra_dict:            # valid algebraic notation for conversion
+            letter_column += (self._algebra_dict[position[0]])
+            number_row += 8 - (int(position[1]))
 
         return letter_column, number_row
 
@@ -92,7 +90,7 @@ class ChessVar:
         Method that takes two string parameters, starting and end positions in algebraic notation,
         checks the current game state ('UNFINISHED', 'WHITE_WON', 'BLACK_WON'), passes the algebraic notation for
         conversion, takes the returned tuple and unpacks that into 2d array notation (array[0][1] where [0]
-        represents the letter column and [1] the row). If a position is out of bounds (-1), it returns False.
+        represents the letter column and [1] the row). If a position is out of bounds, returns False.
 
         It then checks move state (either 'WHITE' or 'BLACK') and proceeds to test legal moves -
         returning False if a move is invalid. If a move is valid, the start and end coordinates are passed to the
@@ -636,7 +634,8 @@ class ChessVar:
         row_result = end_row - start_row
         column_result = end_column - start_column
 
-        if abs(column_result) == abs(row_result):  # bishop functionality
+        # bishop functionality
+        if abs(column_result) == abs(row_result):  
             return self.move_bishop(start_coord, end_coord)
 
         # rook functionality
@@ -676,7 +675,8 @@ class ChessVar:
         if abs(row_result) > 1:
             return False
 
-        if abs(column_result) == abs(row_result):  # bishop functionality
+        # bishop functionality
+        if abs(column_result) == abs(row_result):  
             return self.move_bishop(start_coord, end_coord)
 
         # rook functionality
@@ -685,6 +685,7 @@ class ChessVar:
 
         else:
             return False
+
 
 def main():
     initial_board = [
