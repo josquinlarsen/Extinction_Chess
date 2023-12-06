@@ -511,8 +511,13 @@ class ChessVar:
         row_result = end_row - start_row
         column_result = end_column - start_column
 
-        if abs(column_result) > 0 and abs(row_result) > 0:  # diagonal check
+        end_square = self._game_board[end_column][end_row]
+
+        if abs(column_result) == abs(row_result): #diagonal check
             return False
+
+ #       if abs(column_result) > 0 and abs(row_result) > 0:  # diagonal check
+  #          return False
 
         if row_result == 0:  # check_row
             if column_result < 0:  # moving up
@@ -528,7 +533,6 @@ class ChessVar:
                         self._game_board[end_column][end_row], self._game_board[start_column][start_row]
                     return True
 
-                end_square = self._game_board[end_column][end_row]
                 if end_square != '_':
                     pos = 1
                     for _ in range(abs(column_result) - 1):
@@ -552,7 +556,6 @@ class ChessVar:
                         self._game_board[end_column][end_row], self._game_board[start_column][start_row]
                     return True
 
-                end_square = self._game_board[end_column][end_row]
                 if end_square != '_':
                     pos = 1
                     for _ in range(abs(column_result) - 1):
@@ -577,7 +580,6 @@ class ChessVar:
                         self._game_board[end_column][end_row], self._game_board[start_column][start_row]
                     return True
 
-                end_square = self._game_board[end_column][end_row]
                 if end_square != '_':
                     pos = 1
                     for _ in range(abs(row_result) - 1):
@@ -601,7 +603,6 @@ class ChessVar:
                         self._game_board[end_column][end_row], self._game_board[start_column][start_row]
                     return True
 
-                end_square = self._game_board[end_column][end_row]
                 if end_square != '_':
                     pos = 1
                     for _ in range(abs(row_result) - 1):
@@ -634,19 +635,14 @@ class ChessVar:
         start_row, start_column = start_coord
         end_row, end_column = end_coord
 
-        row_result = end_row - start_row
-        column_result = end_column - start_column
+        row_result = abs(end_row - start_row)
+        column_result = abs(end_column - start_column)
 
-        # bishop functionality
-        if abs(column_result) == abs(row_result):  
-            return self.move_bishop(start_coord, end_coord)
+        bishop = self.move_bishop(start_coord, end_coord)
+        rook = self.move_rook(start_coord, end_coord)
+        diagonal = (column_result == row_result)
 
-        # rook functionality
-        if (row_result == 0 and abs(column_result) > 0) or (abs(row_result) > 0 and column_result == 0):
-            return self.move_rook(start_coord, end_coord)
-
-        
-        return False
+        return bishop if diagonal else rook
 
     def move_king(self, start_coord: tuple, end_coord: tuple) -> bool:
         """
@@ -670,25 +666,17 @@ class ChessVar:
         start_row, start_column = start_coord
         end_row, end_column = end_coord
 
-        row_result = end_row - start_row
-        column_result = end_column - start_column
+        row_result = abs(end_row - start_row)
+        column_result = abs(end_column - start_column)
 
-        if abs(column_result) > 1:
+        bishop = self.move_bishop(start_coord, end_coord)
+        rook = self.move_rook(start_coord, end_coord)
+        diagonal = (column_result == row_result)
+
+        if column_result > 1 or row_result > 1:
             return False
-        if abs(row_result) > 1:
-            return False
 
-        # bishop functionality
-        if abs(column_result) == abs(row_result):  
-            return self.move_bishop(start_coord, end_coord)
-
-        # rook functionality
-        if (row_result == 0 and abs(column_result) > 0) or (abs(row_result) > 0 and column_result == 0):
-            return self.move_rook(start_coord, end_coord)
-
-        
-        return False
-
+        return bishop if diagonal else rook
 
 def main():
     initial_board = [
