@@ -20,20 +20,24 @@ class ChessVar:
     def __init__(self):
         self._game_state = 'UNFINISHED'  # 'UNFINISHED', 'WHITE_WON', 'BLACK_WON'
         self._move_state = 'WHITE'  # 'BLACK'
-        self._game_board = [['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
-                            ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+        self._game_board = [['\u265c', '\u265e', '\u265d', '\u265b', '\u265a', '\u265d', '\u265e', '\u265c'],
+                            ['\u265f', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f'],
                             ['_', '_', '_', '_', '_', '_', '_', '_'],
                             ['_', '_', '_', '_', '_', '_', '_', '_'],
                             ['_', '_', '_', '_', '_', '_', '_', '_'],
                             ['_', '_', '_', '_', '_', '_', '_', '_'],
-                            ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-                            ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]
+                            ['\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659'],
+                            ['\u2656', '\u2658', '\u2657', '\u2655', '\u2654', '\u2657', '\u2658', '\u2656']]
 
         self._white_dict = {'K': 1, 'Q': 1, 'R': 2, 'B': 2, 'N': 2, 'P': 8}
         self._black_dict = {'k': 1, 'q': 1, 'r': 2, 'b': 2, 'n': 2, 'p': 8}
         self._algebra_dict = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
+        self._tally_dict = {'WHITE': {'\u2654': 1, '\u2655': 1, '\u2656': 2, '\u2657': 2, '\u2658': 2, '\u2659': 8}, 
+                            'BLACK': {'\u265a': 1, '\u265b': 1, '\u265c': 2, '\u265d': 2, '\u265e': 2, '\u265f': 8}}
+        self._pieces = {'WHITE': {'king': '\u2654', 'queen': '\u2655', 'rook': '\u2656', 'bishop': '\u2657', 'knight': '\u2658', 'pawn': '\u2659'},
+                        'BLACK': {'king': '\u265a', 'queen': '\u265b', 'rook': '\u265c', 'bishop': '\u265d', 'knight': '\u265e', 'pawn': '\u265f'}}
 
-    def get_game_state(self):
+    def get_game_state(self) -> str:
         """ return game state """
         return self._game_state
 
@@ -41,7 +45,7 @@ class ChessVar:
         """ set/update game state """
         self._game_state = game_state
 
-    def get_move_state(self):
+    def get_move_state(self) -> str:
         """ return whose move it is """
         return self._move_state
 
@@ -49,7 +53,7 @@ class ChessVar:
         """ update move state to 'WHITE' or 'BLACK' """
         self._move_state = player
 
-    def convert_algebraic(self, position: str):
+    def convert_algebraic(self, position: str) -> tuple[int, int] | bool:
         """
         Method that takes a parameter of a string in algebraic notation (e.g. 'a7') and converts that
         to coordinates (0, 1). To align with a chess board the first coordinate refers to the columns
@@ -85,7 +89,7 @@ class ChessVar:
 
         return letter_column, number_row
 
-    def make_move(self, start_pos: str, end_pos: str):
+    def make_move(self, start_pos: str, end_pos: str) -> bool:
         """
         Method that takes two string parameters, starting and end positions in algebraic notation,
         checks the current game state ('UNFINISHED', 'WHITE_WON', 'BLACK_WON'), passes the algebraic notation for
@@ -166,7 +170,7 @@ class ChessVar:
                 printed_row += column
             print(printed_row)
 
-    def check_move(self, start_coord: tuple, end_coord: tuple):
+    def check_move(self, start_coord: tuple, end_coord: tuple) -> bool:
         """
         Method which takes two parameters: the start and end coordinates converted in the make_move
         method. It then checks which piece is at the start location and passes the coordinates to the
@@ -177,7 +181,27 @@ class ChessVar:
         start_row, start_column = start_coord
         end_row, end_column = end_coord
         piece = self._game_board[start_column][start_row]
-
+        player = self.get_move_state()
+        
+        if piece == self._pieces[player]['pawn']:
+            return self.move_pawn(start_coord, end_coord)
+        
+        if piece == self._pieces[player]['knight']:
+            return self.move_knight(start_coord, end_coord)
+        
+        if piece == self._pieces[player]['bishop']:
+            return self.move_bishop(start_coord, end_coord)
+        
+        if piece == self._pieces[player]['rook']:
+             return self.move_rook(start_coord, end_coord)
+        
+        if piece == self._pieces[player]['queen']:
+            return self.move_queen(start_coord, end_coord)
+        
+        if piece == self._pieces[player]['king']:
+            return self.move_king(start_coord, end_coord)
+            
+        """
         if piece == 'p' or piece == 'P':
             return self.move_pawn(start_coord, end_coord)
 
@@ -195,8 +219,9 @@ class ChessVar:
 
         if piece == 'k' or piece == 'K':
             return self.move_king(start_coord, end_coord)
+        """
 
-    def capture_piece(self, start_column: int, start_row: int, end_column: int, end_row: int):
+    def capture_piece(self, start_column: int, start_row: int, end_column: int, end_row: int) -> bool:
         """
        Method which takes four parameters, the starting and end coordinates, and 'captures' opponent's
        piece, decrements the opponent's dictionary (which holds how many of each piece remain)  based on the piece
@@ -206,11 +231,16 @@ class ChessVar:
 
        Returns True or False
         """
+        
+       
         if self.get_move_state() == 'WHITE':
             captured_piece = self._game_board[end_column][end_row]
-            self._black_dict[captured_piece] -= 1
-            if self._black_dict[captured_piece] == 0:
+            self._tally_dict['BLACK'][captured_piece] -= 1
+            if self._tally_dict['BLACK'][captured_piece] == 0:
                 self.set_game_state('WHITE_WON')
+           # self._black_dict[captured_piece] -= 1
+            #if self._black_dict[captured_piece] == 0:
+             #   self.set_game_state('WHITE_WON')
 
             self._game_board[end_column][end_row] = self._game_board[start_column][start_row]
             self._game_board[start_column][start_row] = '_'
@@ -219,9 +249,13 @@ class ChessVar:
 
         if self.get_move_state() == 'BLACK':
             captured_piece = self._game_board[end_column][end_row]
-            self._white_dict[captured_piece] -= 1
-            if self._white_dict[captured_piece] == 0:
+           
+            self._tally_dict['WHITE'][captured_piece] -= 1
+            if self._tally_dict['WHITE'][captured_piece] == 0:
                 self.set_game_state('BLACK_WON')
+           # self._white_dict[captured_piece] -= 1
+           # if self._white_dict[captured_piece] == 0:
+            #    self.set_game_state('BLACK_WON')
 
             self._game_board[end_column][end_row] = self._game_board[start_column][start_row]
             self._game_board[start_column][start_row] = '_'
@@ -231,7 +265,7 @@ class ChessVar:
         else:
             return False
 
-    def move_pawn(self, start_coord: tuple, end_coord: tuple):
+    def move_pawn(self, start_coord: tuple, end_coord: tuple) -> bool:
         """
         White Pawn: 'P', 8 | Black Pawn: 'p' 8
         Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid
@@ -311,7 +345,7 @@ class ChessVar:
         else:
             return False
 
-    def move_knight(self, start_coord: tuple, end_coord: tuple):
+    def move_knight(self, start_coord: tuple, end_coord: tuple) -> bool:
         """
         White Knight:'N', 2 | Black Knight: 'n', 2
         Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid
@@ -358,7 +392,7 @@ class ChessVar:
         if end_square != '_':
             return self.capture_piece(start_column, start_row, end_column, end_row)
 
-    def move_bishop(self, start_coord: tuple, end_coord: tuple):
+    def move_bishop(self, start_coord: tuple, end_coord: tuple) -> bool:
         """
         White bishop: 'B', 2 | Black bishop: 'b', 2
         Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid
@@ -485,7 +519,7 @@ class ChessVar:
 
                 return self.capture_piece(start_column, start_row, end_column, end_row)
 
-    def move_rook(self, start_coord: tuple, end_coord: tuple):
+    def move_rook(self, start_coord: tuple, end_coord: tuple) -> bool:
         """
         White Rook, 'R', 2 | Black Rook: 'r', 2
         Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid
@@ -609,7 +643,7 @@ class ChessVar:
 
                     return self.capture_piece(start_column, start_row, end_column, end_row)
 
-    def move_queen(self, start_coord: tuple, end_coord: tuple):
+    def move_queen(self, start_coord: tuple, end_coord: tuple) -> bool:
         """
         White Queen, 'Q', 1 | Black Queen: 'q', 1
         Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid
@@ -645,7 +679,7 @@ class ChessVar:
         else:
             return False
 
-    def move_king(self, start_coord: tuple, end_coord: tuple):
+    def move_king(self, start_coord: tuple, end_coord: tuple) -> bool:
         """
         White King, 'K', 1 | Black King: 'k', 1
         Method which takes two parameters, the converted start and end coordinates, and tests if a move is valid
