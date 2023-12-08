@@ -181,6 +181,13 @@ class ChessVar:
                 printed_row += column
             print(printed_row)
 
+    def print_tally(self):
+        """ prints tally dictionary"""
+        for player in self._tally_dict:
+            print(f"\t{player}: \n") 
+            for piece in self._tally_dict[player]:
+                print(f"\t{piece} - {self._tally_dict[player][piece]}")
+
     def check_move(self, start_coord: tuple, end_coord: tuple) -> bool:
         """
         Method which takes two parameters: the start and end coordinates converted in the make_move
@@ -685,6 +692,8 @@ def main():
     cv.make_move('b1', 'c3')
     cv.make_move('d5', 'e4')
     cv.print_board()
+
+    cv.print_tally()
 
 
 if __name__ == '__main__':
