@@ -1,18 +1,21 @@
 # Author: Josquin Larsen
 # GitHub username: josquinlarsen
-# Date: 18/nov/2023
-# Description: Project 9: Portfolio Project - ChessVar.py - A variant of Extinction Chess where the winning player
-# captures all the pieces of one type (e.g. all pawns (8), all knights (2), or the queen (1)). Pawn promotion,
-# en passant, and castling are not allowed; check and checkmate are not considered; pieces move according to standard
-# rules. White starts play by entering a start position and end position in algebraic notation (e.g. e2, e4), based on
-# the standard chess board:  8 x 8 square grid; columns: from left to right, A - H;  rows: from bottom to top,  1 - 8.
-# If the player enters an invalid move (either off the grid, against a piece's standard move - (e.g. a rook moving
-# diagonally) - another of the player's pieces is in the end square, or a piece blocks the route to the destination) the
-# program returns False. Player state will not change until the current player enters a valid move.  If the move is
-# valid, the program will: move the piece (updating the starting location to an empty square and the end location to
-# the piece that moved) ; capture an opponent's piece ; update the tally of pieces to reflect the capture (and if the
-# move is a winning move, update the game state to the winning player) ; update the current player to the opponent ; and
-# return True.
+# Date: 9/dec/2023
+# Description: Extinction_Chess - A variant of chess where the winning player captures all the pieces of one type
+#             (e.g. all pawns (8), all knights (2), or the queen (1)). En passant, and castling are not allowed; 
+#             check and checkmate are not considered; pieces move according to standard rules. White starts play by 
+#             entering a start position and end position in algebraic notation (e.g. e2, e4), based on the standard 
+#             chess board: 8 x 8 square grid; columns: from left to right, A - H;  rows: from bottom to top,  1 - 8.
+#
+#             If the player enters an invalid move (either off the grid, against a piece's standard move - (e.g. a 
+#             rook moving diagonally) - another of the player's pieces is in the end square, or a piece blocks the 
+#             route to the destination) the program returns False. Player state will not change until the current 
+#             player enters a valid move.  If the move is valid, the program will: move the piece (updating the starting 
+#             location to an empty square and the end location to the piece that moved) ; capture an opponent's piece;
+#             update the tally of pieces to reflect the capture (and if the move is a winning move, update the game state
+#             to the winning player) ; update the current player to the opponent ; and return True. 
+#
+#             Displays unicode chess piece during game play.
 
 class ChessVar:
     """ a class to create an object of a ChessVar game"""
@@ -52,7 +55,7 @@ class ChessVar:
         self._move_state = player
 
     def play_chess(self):
-        """ simulates game play """
+        """ simulates turn-based game play """
 
         start_move = False
         end_move = False
@@ -291,7 +294,12 @@ class ChessVar:
         return False
 
     def pawn_promotion(self, start_coord: tuple, end_coord: tuple):
-        """ promote pawn to new piece """
+        """ 
+        Method which allows a player to promote pawn to a queen, rook, knight, or bishop, once that pawn
+        reaches the final row (row 8 for white, row 1 for black); updates piece counts accordingly. 
+
+        If player promotes their last pawn, game status is updated to a win for the opposing player. 
+        """
         start_row, start_column = start_coord
         end_row, end_column = end_coord
 
@@ -849,15 +857,6 @@ class ChessVar:
         return bishop if diagonal else rook
 
 def main():
-    initial_board = [
-        ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
-        ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
-        ['_', '_', '_', '_', '_', '_', '_', '_'],
-        ['_', '_', '_', '_', '_', '_', '_', '_'],
-        ['_', '_', '_', '_', '_', '_', '_', '_'],
-        ['_', '_', '_', '_', '_', '_', '_', '_'],
-        ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-        ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]
     
     intial_board_uni = [
         ['\u265c', '\u265e', '\u265d', '\u265b', '\u265a', '\u265d', '\u265e', '\u265c'],
@@ -870,17 +869,8 @@ def main():
         ['\u2656', '\u2658', '\u2657', '\u2655', '\u2654', '\u2657', '\u2658', '\u2656']]
 
     cv = ChessVar()
-
+    cv.print_board()
     cv.play_chess()
-
-   # cv.make_move('e2', 'e4')
-    #cv.make_move('d7', 'd5')
-    #cv.make_move('b1', 'c3')
-   # cv.make_move('b7', 'b8')
-    #cv.make_move('b2', 'a1')
-    #cv.make_move('c7', 'd8')
-    #cv.print_board()
-    #cv.print_tally()
 
 
 if __name__ == '__main__':
