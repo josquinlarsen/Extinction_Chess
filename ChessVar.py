@@ -81,6 +81,9 @@ class ChessVar:
             move = self.make_move(start_pos, end_pos)
             if move is True:
                 valid_move = True
+            else:
+                print("Invalid move, try again")
+                self.play_chess()
 
         self.print_board()
         self.print_tally()
@@ -92,7 +95,8 @@ class ChessVar:
             valid_move = False
             print(f"{self.get_game_state()}")       
 
-        valid_move = False                
+        valid_move = False
+        self.play_chess()                
 
     def convert_algebraic(self, position: str) -> tuple[int, int] | bool:
         """
