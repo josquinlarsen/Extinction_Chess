@@ -70,7 +70,7 @@ class ChessVar:
                 start_pos = self.convert_algebraic(start_input)
                 if start_pos is False:
                     start_input
-                 
+                    
                 start_move = True
 
             while end_move is False:
@@ -120,16 +120,18 @@ class ChessVar:
         check_alpha = position[0].isalpha()
         if check_alpha is False:
             return False
+        
+        alpha_lower = position[0].lower()
 
         check_num = position[1].isdigit()
         if check_num is False:
             return False
 
-        if position[0] not in self._algebra_dict:
+        if alpha_lower not in self._algebra_dict:
             return False
 
-        if position[0] in self._algebra_dict:            # valid algebraic notation for conversion
-            letter_column += (self._algebra_dict[position[0]])
+        if alpha_lower in self._algebra_dict:            # valid algebraic notation for conversion
+            letter_column += (self._algebra_dict[alpha_lower])
             number_row += 8 - (int(position[1]))
 
         if (number_row < 0) or (number_row > 7):
