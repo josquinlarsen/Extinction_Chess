@@ -20,13 +20,13 @@ class ChessVar:
     def __init__(self):
         self._game_state = 'UNFINISHED'  # 'UNFINISHED', 'WHITE_WON', 'BLACK_WON'
         self._move_state = 'WHITE'  # 'BLACK'
-        self._game_board = [['\u265c', '\u265e', '\u265d', '\u265b', '\u265a', '\u265d', '\u265e', '\u265c'],
-                            ['\u265f', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f'],
+        self._game_board = [['\u265c', '_', '\u265d', '\u265b', '\u265a', '\u265d', '\u265e', '\u265c'],
+                            ['_', '\u2659', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f'],
                             ['_', '_', '_', '_', '_', '_', '_', '_'],
                             ['_', '_', '_', '_', '_', '_', '_', '_'],
                             ['_', '_', '_', '_', '_', '_', '_', '_'],
                             ['_', '_', '_', '_', '_', '_', '_', '_'],
-                            ['\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659'],
+                            ['\u2659', '\u265f', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659'],
                             ['\u2656', '\u2658', '\u2657', '\u2655', '\u2654', '\u2657', '\u2658', '\u2656']]
 
         self._algebra_dict = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
@@ -183,10 +183,12 @@ class ChessVar:
 
     def print_tally(self):
         """ prints tally dictionary"""
+
         for player in self._tally_dict:
-            print(f'\n{player}')
+            print(f'\n{player:^1}')
             for piece in self._tally_dict[player]:
-                print(f'{piece} : {self._tally_dict[player][piece]}')
+                print(f'{piece:^1} : {self._tally_dict[player][piece]:^1}')
+                
             
     def check_move(self, start_coord: tuple, end_coord: tuple) -> bool:
         """
@@ -254,6 +256,57 @@ class ChessVar:
 
         return False
 
+    def pawn_promotion(self, start_coord: tuple, end_coord: tuple):
+        """ promote pawn to new piece """
+        start_row, start_column = start_coord
+        end_row, end_column = end_coord
+
+        white_promotion = {'queen': '\u2655', 'rook': '\u2656', 'bishop': '\u2657', 'knight': '\u2658'}
+        black_promotion = {'queen': '\u265b', 'rook': '\u265c', 'bishop': '\u265d', 'knight': '\u265e'}
+        promo_list = ['queen', 'rook', 'bishop', 'knight']
+        
+        if self.get_move_state() == 'WHITE':
+    
+            print("\nPawn Promotion")
+            for idx, piece in enumerate(promo_list):
+                print(f"{idx + 1}.{piece}")
+            
+            user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+
+            if user_input in range(len(promo_list)):
+                new_piece = promo_list[user_input]
+                self._game_board[end_column][end_row] = white_promotion[new_piece]
+                self._game_board[start_column][start_row] = '_'
+
+                self._tally_dict['WHITE'][self._game_board[end_column][end_row]] += 1
+                self._tally_dict['WHITE']['\u2659'] -= 1
+
+                if self._tally_dict['WHITE']['\u2659'] == 0:
+                    self.set_game_state('BLACK_WON')
+
+                return True
+            
+        if self.get_move_state() == 'BLACK':
+    
+            print("\nPawn Promotion")
+            for idx, piece in enumerate(promo_list):
+                print(f"{idx + 1}.{piece}")
+            
+            user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+
+            if user_input in range(len(promo_list)):
+                new_piece = promo_list[user_input]
+                self._game_board[end_column][end_row] = black_promotion[new_piece]
+                self._game_board[start_column][start_row] = '_'
+
+                self._tally_dict['BLACK'][self._game_board[end_column][end_row]] += 1
+                self._tally_dict['BLACK']['\u265f'] -= 1
+
+                if self._tally_dict['BLACK']['\u265f'] == 0:
+                    self.set_game_state('WHITE_WON')
+
+                return True
+
     def move_pawn(self, start_coord: tuple, end_coord: tuple) -> bool:
         """
         White Pawn: 'P', 8 | Black Pawn: 'p' 8
@@ -299,6 +352,9 @@ class ChessVar:
                         return True
 
                     return False
+                
+            if end_column == 0:
+                return self.pawn_promotion(start_coord, end_coord)
 
         if self.get_move_state() == 'BLACK':
             if (column_result <= 0) or (column_result > 2):
@@ -319,6 +375,9 @@ class ChessVar:
 
                     return False
 
+            if end_column == 7:
+                return self.pawn_promotion(start_coord, end_coord)
+            
         if (abs(column_result) == 1) and (end_square == '_'):
             self._game_board[start_column][start_row], self._game_board[end_column][end_row] = \
                 self._game_board[end_column][end_row], self._game_board[start_column][start_row]
@@ -684,15 +743,25 @@ def main():
         ['_', '_', '_', '_', '_', '_', '_', '_'],
         ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
         ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]
+    
+    intial_board_uni = [
+        ['\u265c', '\u265e', '\u265d', '\u265b', '\u265a', '\u265d', '\u265e', '\u265c'],
+        ['\u265f', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f'],
+        ['_', '_', '_', '_', '_', '_', '_', '_'],
+        ['_', '_', '_', '_', '_', '_', '_', '_'],
+        ['_', '_', '_', '_', '_', '_', '_', '_'],
+        ['_', '_', '_', '_', '_', '_', '_', '_'],
+        ['\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659'],
+        ['\u2656', '\u2658', '\u2657', '\u2655', '\u2654', '\u2657', '\u2658', '\u2656']]
 
     cv = ChessVar()
 
-    cv.make_move('e2', 'e4')
-    cv.make_move('d7', 'd5')
-    cv.make_move('b1', 'c3')
-    cv.make_move('d5', 'e4')
+   # cv.make_move('e2', 'e4')
+    #cv.make_move('d7', 'd5')
+    #cv.make_move('b1', 'c3')
+    cv.make_move('b7', 'b8')
+    cv.make_move('b2', 'a1')
     cv.print_board()
-
     cv.print_tally()
 
 
