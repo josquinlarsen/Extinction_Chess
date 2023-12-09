@@ -261,51 +261,108 @@ class ChessVar:
         start_row, start_column = start_coord
         end_row, end_column = end_coord
 
+        row_result = end_row - start_row
+        column_result = end_column - start_column
+
         white_promotion = {'queen': '\u2655', 'rook': '\u2656', 'bishop': '\u2657', 'knight': '\u2658'}
         black_promotion = {'queen': '\u265b', 'rook': '\u265c', 'bishop': '\u265d', 'knight': '\u265e'}
         promo_list = ['queen', 'rook', 'bishop', 'knight']
         
-        if self.get_move_state() == 'WHITE':
-    
-            print("\nPawn Promotion")
-            for idx, piece in enumerate(promo_list):
-                print(f"{idx + 1}.{piece}")
-            
-            user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+        if (abs(column_result) == 1) and (abs(row_result) == 1):
 
-            if user_input in range(len(promo_list)):
-                new_piece = promo_list[user_input]
-                self._game_board[end_column][end_row] = white_promotion[new_piece]
-                self._game_board[start_column][start_row] = '_'
-
-                self._tally_dict['WHITE'][self._game_board[end_column][end_row]] += 1
-                self._tally_dict['WHITE']['\u2659'] -= 1
-
-                if self._tally_dict['WHITE']['\u2659'] == 0:
-                    self.set_game_state('BLACK_WON')
-
-                return True
-            
-        if self.get_move_state() == 'BLACK':
-    
-            print("\nPawn Promotion")
-            for idx, piece in enumerate(promo_list):
-                print(f"{idx + 1}.{piece}")
-            
-            user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
-
-            if user_input in range(len(promo_list)):
-                new_piece = promo_list[user_input]
-                self._game_board[end_column][end_row] = black_promotion[new_piece]
-                self._game_board[start_column][start_row] = '_'
-
-                self._tally_dict['BLACK'][self._game_board[end_column][end_row]] += 1
-                self._tally_dict['BLACK']['\u265f'] -= 1
-
-                if self._tally_dict['BLACK']['\u265f'] == 0:
+            if self.get_move_state() == 'WHITE':
+                captured_piece = self._game_board[end_column][end_row]
+                self._tally_dict['BLACK'][captured_piece] -= 1
+                if self._tally_dict['BLACK'][captured_piece] == 0:
                     self.set_game_state('WHITE_WON')
 
-                return True
+                print("\nPawn Promotion")                   # pawn promotion 
+                for idx, piece in enumerate(promo_list):
+                    print(f"{idx + 1}.{piece}")
+                
+                user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+
+                if user_input in range(len(promo_list)):
+                    new_piece = promo_list[user_input]
+                    self._game_board[end_column][end_row] = white_promotion[new_piece]
+                    self._game_board[start_column][start_row] = '_'
+
+                    self._tally_dict['WHITE'][self._game_board[end_column][end_row]] += 1
+                    self._tally_dict['WHITE']['\u2659'] -= 1
+
+                    if self._tally_dict['WHITE']['\u2659'] == 0:
+                        self.set_game_state('BLACK_WON')
+
+                    return True
+                
+            if self.get_move_state() == 'BLACK':
+                captured_piece = self._game_board[end_column][end_row]
+            
+                self._tally_dict['WHITE'][captured_piece] -= 1
+                if self._tally_dict['WHITE'][captured_piece] == 0:
+                    self.set_game_state('BLACK_WON')
+
+                print("\nPawn Promotion")
+                for idx, piece in enumerate(promo_list):
+                    print(f"{idx + 1}.{piece}")
+                
+                user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+
+                if user_input in range(len(promo_list)):
+                    new_piece = promo_list[user_input]
+                    self._game_board[end_column][end_row] = black_promotion[new_piece]
+                    self._game_board[start_column][start_row] = '_'
+
+                    self._tally_dict['BLACK'][self._game_board[end_column][end_row]] += 1
+                    self._tally_dict['BLACK']['\u265f'] -= 1
+
+                    if self._tally_dict['BLACK']['\u265f'] == 0:
+                        self.set_game_state('WHITE_WON')
+
+                    return True
+                   
+        else:
+            if self.get_move_state() == 'WHITE':
+        
+                print("\nPawn Promotion")
+                for idx, piece in enumerate(promo_list):
+                    print(f"{idx + 1}.{piece}")
+                
+                user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+
+                if user_input in range(len(promo_list)):
+                    new_piece = promo_list[user_input]
+                    self._game_board[end_column][end_row] = white_promotion[new_piece]
+                    self._game_board[start_column][start_row] = '_'
+
+                    self._tally_dict['WHITE'][self._game_board[end_column][end_row]] += 1
+                    self._tally_dict['WHITE']['\u2659'] -= 1
+
+                    if self._tally_dict['WHITE']['\u2659'] == 0:
+                        self.set_game_state('BLACK_WON')
+
+                    return True
+                
+            if self.get_move_state() == 'BLACK':
+        
+                print("\nPawn Promotion")
+                for idx, piece in enumerate(promo_list):
+                    print(f"{idx + 1}.{piece}")
+                
+                user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+
+                if user_input in range(len(promo_list)):
+                    new_piece = promo_list[user_input]
+                    self._game_board[end_column][end_row] = black_promotion[new_piece]
+                    self._game_board[start_column][start_row] = '_'
+
+                    self._tally_dict['BLACK'][self._game_board[end_column][end_row]] += 1
+                    self._tally_dict['BLACK']['\u265f'] -= 1
+
+                    if self._tally_dict['BLACK']['\u265f'] == 0:
+                        self.set_game_state('WHITE_WON')
+
+                    return True
 
     def move_pawn(self, start_coord: tuple, end_coord: tuple) -> bool:
         """
@@ -352,9 +409,6 @@ class ChessVar:
                         return True
 
                     return False
-                
-            if end_column == 0:
-                return self.pawn_promotion(start_coord, end_coord)
 
         if self.get_move_state() == 'BLACK':
             if (column_result <= 0) or (column_result > 2):
@@ -375,8 +429,8 @@ class ChessVar:
 
                     return False
 
-            if end_column == 7:
-                return self.pawn_promotion(start_coord, end_coord)
+        if (end_column == 0) or (end_column == 7):
+            return self.pawn_promotion(start_coord, end_coord)
             
         if (abs(column_result) == 1) and (end_square == '_'):
             self._game_board[start_column][start_row], self._game_board[end_column][end_row] = \
