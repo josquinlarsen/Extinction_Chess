@@ -51,6 +51,49 @@ class ChessVar:
         """ update move state to 'WHITE' or 'BLACK' """
         self._move_state = player
 
+    def play_chess(self):
+        """ simulates game play """
+
+        start_move = False
+        end_move = False
+        valid_move = False
+
+        current_player = self.get_move_state()
+        print(f"{current_player}'s move")
+
+        while valid_move is False:
+            while start_move is False:
+                start_input = str(input('Please enter your starting move (e.g. a2): '))
+                start_pos = self.convert_algebraic(start_input)
+                if start_pos is False:
+                    start_input
+                 
+                start_move = True
+
+            while end_move is False:
+                end_input = str(input('Please enter your end move (e.g. a4): '))
+                end_pos = self.convert_algebraic(end_input)
+                if end_pos is False:
+                    end_input
+                
+                end_move = True 
+
+            move = self.make_move(start_pos, end_pos)
+            if move is True:
+                valid_move = True
+
+        self.print_board()
+        self.print_tally()
+
+        #valid_move = False
+        start_move = False
+        end_move = False
+
+        if self.get_game_state()!= 'UNFINISHED':
+            valid_move = False
+            print(f"{self.get_game_state()}")       
+                
+
     def convert_algebraic(self, position: str) -> tuple[int, int] | bool:
         """
         Method that takes a parameter of a string in algebraic notation (e.g. 'a7') and converts that
@@ -103,8 +146,10 @@ class ChessVar:
 
         Returns True or False
         """
-        start_coord = self.convert_algebraic(start_pos)
-        end_coord = self.convert_algebraic(end_pos)
+       # start_coord = self.convert_algebraic(start_pos)
+       # end_coord = self.convert_algebraic(end_pos)
+        start_coord = start_pos
+        end_coord = end_pos
 
         if start_coord is False:  # check out-of-bounds move (e.g. a9 or i1) before unpacking
             return False
@@ -822,14 +867,16 @@ def main():
 
     cv = ChessVar()
 
+    cv.play_chess()
+
    # cv.make_move('e2', 'e4')
     #cv.make_move('d7', 'd5')
     #cv.make_move('b1', 'c3')
-    cv.make_move('b7', 'b8')
-    cv.make_move('b2', 'a1')
-    cv.make_move('c7', 'd8')
-    cv.print_board()
-    cv.print_tally()
+   # cv.make_move('b7', 'b8')
+    #cv.make_move('b2', 'a1')
+    #cv.make_move('c7', 'd8')
+    #cv.print_board()
+    #cv.print_tally()
 
 
 if __name__ == '__main__':
