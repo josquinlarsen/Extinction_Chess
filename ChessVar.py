@@ -59,7 +59,7 @@ class ChessVar:
         valid_move = False
 
         current_player = self.get_move_state()
-        print(f"{current_player}'s move")
+        print(f"\n{current_player}'s move")
 
         while valid_move is False:
             while start_move is False:
@@ -180,7 +180,7 @@ class ChessVar:
             if start_square in self._pieces['BLACK']:
                 return False
             
-            if end_square in self._pieces['WHITE']:
+            if end_square in self._pieces['WHITE'].values():
                 return False
 
             valid_move_white = self.check_move(start_coord, end_coord)
@@ -198,7 +198,7 @@ class ChessVar:
             if start_square in self._pieces['WHITE']:
                 return False
 
-            if end_square in self._pieces['BLACK']:
+            if end_square in self._pieces['BLACK'].values():
                 return False
 
             valid_move_black = self.check_move(start_coord, end_coord)
