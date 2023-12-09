@@ -20,13 +20,13 @@ class ChessVar:
     def __init__(self):
         self._game_state = 'UNFINISHED'  # 'UNFINISHED', 'WHITE_WON', 'BLACK_WON'
         self._move_state = 'WHITE'  # 'BLACK'
-        self._game_board = [['\u265c', '_', '\u265d', '\u265b', '\u265a', '\u265d', '\u265e', '\u265c'],
-                            ['_', '\u2659', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f'],
+        self._game_board = [['\u265c', '\u265e', '\u265d', '\u265b', '\u265a', '\u265d', '\u265e', '\u265c'],
+                            ['\u265f', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f'],
                             ['_', '_', '_', '_', '_', '_', '_', '_'],
                             ['_', '_', '_', '_', '_', '_', '_', '_'],
                             ['_', '_', '_', '_', '_', '_', '_', '_'],
                             ['_', '_', '_', '_', '_', '_', '_', '_'],
-                            ['\u2659', '\u265f', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659'],
+                            ['\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659'],
                             ['\u2656', '\u2658', '\u2657', '\u2655', '\u2654', '\u2657', '\u2658', '\u2656']]
 
         self._algebra_dict = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
@@ -127,16 +127,9 @@ class ChessVar:
 
             if start_square == '_':  # empty square
                 return False
-
-           # if start_square.islower() is True:  # trying to move black piece #need to fix
-            #    return False
             
             if start_square in self._pieces['BLACK']:
                 return False
-
-           # check_white = end_square.isupper()  # end square is same player
-            #if check_white is True:
-            #    return False
             
             if end_square in self._pieces['WHITE']:
                 return False
@@ -153,15 +146,8 @@ class ChessVar:
             if start_square == '_':  # empty square
                 return False
 
-           # if start_square.isupper() is True:  # trying to move white piece
-            #    return False
-            
             if start_square in self._pieces['WHITE']:
                 return False
-
-           # check_black = end_square.islower()  # end square is same player
-            #if check_black is True:
-             #   return False
 
             if end_square in self._pieces['BLACK']:
                 return False
@@ -189,7 +175,6 @@ class ChessVar:
             for piece in self._tally_dict[player]:
                 print(f'{piece:^1} : {self._tally_dict[player][piece]:^1}')
                 
-            
     def check_move(self, start_coord: tuple, end_coord: tuple) -> bool:
         """
         Method which takes two parameters: the start and end coordinates converted in the make_move
@@ -264,6 +249,9 @@ class ChessVar:
         row_result = end_row - start_row
         column_result = end_column - start_column
 
+        valid_input_white = False
+        valid_input_black = False
+
         white_promotion = {'queen': '\u2655', 'rook': '\u2656', 'bishop': '\u2657', 'knight': '\u2658'}
         black_promotion = {'queen': '\u265b', 'rook': '\u265c', 'bishop': '\u265d', 'knight': '\u265e'}
         promo_list = ['queen', 'rook', 'bishop', 'knight']
@@ -280,7 +268,12 @@ class ChessVar:
                 for idx, piece in enumerate(promo_list):
                     print(f"{idx + 1}.{piece}")
                 
-                user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+                while valid_input_white is False:
+                    user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+                    if  (user_input > 3)or (user_input < 0): 
+                        user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+                    else: 
+                        valid_input_white = True
 
                 if user_input in range(len(promo_list)):
                     new_piece = promo_list[user_input]
@@ -293,6 +286,7 @@ class ChessVar:
                     if self._tally_dict['WHITE']['\u2659'] == 0:
                         self.set_game_state('BLACK_WON')
 
+                    valid_input_white = False
                     return True
                 
             if self.get_move_state() == 'BLACK':
@@ -306,7 +300,12 @@ class ChessVar:
                 for idx, piece in enumerate(promo_list):
                     print(f"{idx + 1}.{piece}")
                 
-                user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+                while valid_input_black is False:
+                    user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+                    if  (user_input > 3)or (user_input < 0): 
+                        user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+                    else: 
+                        valid_input_black = True
 
                 if user_input in range(len(promo_list)):
                     new_piece = promo_list[user_input]
@@ -319,6 +318,7 @@ class ChessVar:
                     if self._tally_dict['BLACK']['\u265f'] == 0:
                         self.set_game_state('WHITE_WON')
 
+                    valid_input_black = False
                     return True
                    
         else:
@@ -327,8 +327,13 @@ class ChessVar:
                 print("\nPawn Promotion")
                 for idx, piece in enumerate(promo_list):
                     print(f"{idx + 1}.{piece}")
-                
-                user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+
+                while valid_input_white is False:
+                    user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+                    if  (user_input > 3)or (user_input < 0): 
+                        user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+                    else: 
+                        valid_input_white = True
 
                 if user_input in range(len(promo_list)):
                     new_piece = promo_list[user_input]
@@ -341,6 +346,7 @@ class ChessVar:
                     if self._tally_dict['WHITE']['\u2659'] == 0:
                         self.set_game_state('BLACK_WON')
 
+                    valid_input_white = False
                     return True
                 
             if self.get_move_state() == 'BLACK':
@@ -349,7 +355,12 @@ class ChessVar:
                 for idx, piece in enumerate(promo_list):
                     print(f"{idx + 1}.{piece}")
                 
-                user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+                while valid_input_black is False:
+                    user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+                    if  (user_input > 3)or (user_input < 0): 
+                        user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+                    else: 
+                        valid_input_black = True
 
                 if user_input in range(len(promo_list)):
                     new_piece = promo_list[user_input]
@@ -362,6 +373,7 @@ class ChessVar:
                     if self._tally_dict['BLACK']['\u265f'] == 0:
                         self.set_game_state('WHITE_WON')
 
+                    valid_input_black = False
                     return True
 
     def move_pawn(self, start_coord: tuple, end_coord: tuple) -> bool:
@@ -815,6 +827,7 @@ def main():
     #cv.make_move('b1', 'c3')
     cv.make_move('b7', 'b8')
     cv.make_move('b2', 'a1')
+    cv.make_move('c7', 'd8')
     cv.print_board()
     cv.print_tally()
 
