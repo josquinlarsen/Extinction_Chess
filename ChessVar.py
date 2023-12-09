@@ -85,14 +85,14 @@ class ChessVar:
         self.print_board()
         self.print_tally()
 
-        #valid_move = False
         start_move = False
         end_move = False
 
         if self.get_game_state()!= 'UNFINISHED':
             valid_move = False
             print(f"{self.get_game_state()}")       
-                
+
+        valid_move = False                
 
     def convert_algebraic(self, position: str) -> tuple[int, int] | bool:
         """
