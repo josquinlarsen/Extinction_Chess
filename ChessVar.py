@@ -69,15 +69,19 @@ class ChessVar:
                 start_input = str(input('Please enter your starting move (e.g. a2): '))
                 start_pos = self.convert_algebraic(start_input)
                 if start_pos is False:
-                    start_input
-                    
+                    print("Invalid input.\n")
+                    start_input = str(input('Please enter your starting move (e.g. a2): '))
+                    start_pos = self.convert_algebraic(start_input)
+
                 start_move = True
 
             while end_move is False:
                 end_input = str(input('Please enter your end move (e.g. a4): '))
                 end_pos = self.convert_algebraic(end_input)
                 if end_pos is False:
-                    end_input
+                    print("Invalid input.\n")
+                    end_input = str(input('Please enter your end move (e.g. a4): '))
+                    end_pos = self.convert_algebraic(end_input)
                 
                 end_move = True 
 
@@ -329,8 +333,13 @@ class ChessVar:
                 
                 while valid_input_white is False:
                     user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
-                    if  (user_input > 3)or (user_input < 0): 
+                    if  (user_input > 3) or (user_input < 0):
+                        print("Invalid input.\n") 
                         user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+                    if user_input.isdigit() is False:
+                        print("Invalid input. \n")
+                        user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+                        
                     else: 
                         valid_input_white = True
 
@@ -361,10 +370,12 @@ class ChessVar:
                 
                 while valid_input_black is False:
                     user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
-                    if  (user_input > 3)or (user_input < 0): 
+                    if  (user_input > 3) or (user_input < 0):
+                        print("Invalid input.\n") 
                         user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
-                    else: 
-                        valid_input_black = True
+                    if user_input.isdigit() is False:
+                        print("Invalid input. \n")
+                        user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
 
                 if user_input in range(len(promo_list)):
                     new_piece = promo_list[user_input]
@@ -389,10 +400,12 @@ class ChessVar:
 
                 while valid_input_white is False:
                     user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
-                    if  (user_input > 3)or (user_input < 0): 
+                    if  (user_input > 3) or (user_input < 0):
+                        print("Invalid input.\n") 
                         user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
-                    else: 
-                        valid_input_white = True
+                    if user_input.isdigit() is False:
+                        print("Invalid input. \n")
+                        user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
 
                 if user_input in range(len(promo_list)):
                     new_piece = promo_list[user_input]
@@ -416,10 +429,12 @@ class ChessVar:
                 
                 while valid_input_black is False:
                     user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
-                    if  (user_input > 3)or (user_input < 0): 
+                    if  (user_input > 3) or (user_input < 0):
+                        print("Invalid input.\n") 
                         user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
-                    else: 
-                        valid_input_black = True
+                    if user_input.isdigit() is False:
+                        print("Invalid input. \n")
+                        user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
 
                 if user_input in range(len(promo_list)):
                     new_piece = promo_list[user_input]
