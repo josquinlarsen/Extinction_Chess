@@ -1,6 +1,8 @@
 # Extinction_Chess
 Allows two players to play Extinction Chess. Written in Python
 
+Portfolio Project for CS162 (Intro to Computer Science II) Fall 2023
+
 A variant of chess where the winning player must capture all the pieces of one type
 (e.g. all pawns (8), all knights (2), or the queen (1)). En passant, and castling are not allowed; 
 check and checkmate are not considered; pieces move according to standard rules. White starts play by 
@@ -16,3 +18,5 @@ update the tally of pieces to reflect the capture (and if the move is a winning 
 to the winning player) ; update the current player to the opponent ; and return True.
 
 If pawn promotion causes the player to no longer have any pawns, game state is updated to a win for the opponent. 
+
+**Added Pawn Promotion, real-time play ability, unicode piece representation beyond original specifications
