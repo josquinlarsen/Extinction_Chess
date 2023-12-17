@@ -319,7 +319,11 @@ class ChessVar:
         black_promotion = {'queen': '\u265b', 'rook': '\u265c', 'bishop': '\u265d', 'knight': '\u265e'}
         promo_list = ['queen', 'rook', 'bishop', 'knight']
         promo_dico = {'1':'queen', '2':'rook', '3':'bishop', '4':'knight'}
-        
+
+        print("\nPawn Promotion")                   # pawn promotion 
+        for number, piece in promo_dico.items(): 
+            print(f"{number}. {piece}")
+
         if (abs(column_result) == 1) and (abs(row_result) == 1):
 
             if self.get_move_state() == 'WHITE':
@@ -327,10 +331,6 @@ class ChessVar:
                 self._tally_dict['BLACK'][captured_piece] -= 1
                 if self._tally_dict['BLACK'][captured_piece] == 0:
                     self.set_game_state('WHITE_WON')
-
-                print("\nPawn Promotion")                   # pawn promotion 
-                for number, piece in promo_dico.items(): 
-                    print(f"{number}. {piece}")
 
                 while valid_input_white is False:
                     user_input = input("Please choose the piece you want by selecting the number: ")
@@ -358,10 +358,6 @@ class ChessVar:
                 if self._tally_dict['WHITE'][captured_piece] == 0:
                     self.set_game_state('BLACK_WON')
 
-                print("\nPawn Promotion")
-                for number, piece in promo_dico.items(): 
-                    print(f"{number}. {piece}")
-
                 while valid_input_black is False:
                     user_input = input("Please choose the piece you want by selecting the number: ")
                     if user_input not in promo_dico:
@@ -384,9 +380,6 @@ class ChessVar:
         else:
             if self.get_move_state() == 'WHITE':
         
-                for number, piece in promo_dico.items(): 
-                    print(f"{number}. {piece}")
-
                 while valid_input_white is False:
                     user_input = input("Please choose the piece you want by selecting the number: ")
                     if user_input not in promo_dico:
@@ -407,10 +400,6 @@ class ChessVar:
                     return True
                 
             if self.get_move_state() == 'BLACK':
-        
-                print("\nPawn Promotion")
-                for number, piece in promo_dico.items(): 
-                    print(f"{number}. {piece}")
 
                 while valid_input_black is False:
                     user_input = input("Please choose the piece you want by selecting the number: ")
@@ -464,6 +453,9 @@ class ChessVar:
 
             if (row_result != 0) and (end_square == '_'):
                 return False
+            
+            if (row_result == 0) and (end_square != '_'): 
+                return False
 
             if start_column == 6:  # opening pawn move
                 if (column_result == -2) and (row_result != 0):
@@ -482,6 +474,9 @@ class ChessVar:
                 return False
 
             if (row_result != 0) and (end_square == '_'):
+                return False
+            
+            if (row_result == 0) and (end_square != '_'): 
                 return False
 
             if start_column == 1:  # opening pawn move
