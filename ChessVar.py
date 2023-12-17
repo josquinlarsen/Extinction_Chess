@@ -24,7 +24,7 @@ class ChessVar:
         self._game_state = 'UNFINISHED'  # 'UNFINISHED', 'WHITE_WON', 'BLACK_WON'
         self._move_state = 'WHITE'  # 'BLACK'
         self._game_board = [['\u265c', '\u265e', '\u265d', '\u265b', '\u265a', '\u265d', '\u265e', '\u265c'],
-                            ['\u265f', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f'],
+                            ['\u265f', '\u2659', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f', '\u265f'],
                             ['_', '_', '_', '_', '_', '_', '_', '_'],
                             ['_', '_', '_', '_', '_', '_', '_', '_'],
                             ['_', '_', '_', '_', '_', '_', '_', '_'],
@@ -318,6 +318,7 @@ class ChessVar:
         white_promotion = {'queen': '\u2655', 'rook': '\u2656', 'bishop': '\u2657', 'knight': '\u2658'}
         black_promotion = {'queen': '\u265b', 'rook': '\u265c', 'bishop': '\u265d', 'knight': '\u265e'}
         promo_list = ['queen', 'rook', 'bishop', 'knight']
+        promo_dico = {'1':'queen', '2':'rook', '3':'bishop', '4':'knight'}
         
         if (abs(column_result) == 1) and (abs(row_result) == 1):
 
@@ -328,23 +329,16 @@ class ChessVar:
                     self.set_game_state('WHITE_WON')
 
                 print("\nPawn Promotion")                   # pawn promotion 
-                for idx, piece in enumerate(promo_list):
-                    print(f"{idx + 1}.{piece}")
-                
-                while valid_input_white is False:
-                    user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
-                    if  (user_input > 3) or (user_input < 0):
-                        print("Invalid input.\n") 
-                        user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
-                    if user_input.isdigit() is False:
-                        print("Invalid input. \n")
-                        user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
-                        
-                    else: 
-                        valid_input_white = True
+                for number, piece in promo_dico.items(): 
+                    print(f"{number}. {piece}")
 
-                if user_input in range(len(promo_list)):
-                    new_piece = promo_list[user_input]
+                while valid_input_white is False:
+                    user_input = input("Please choose the piece you want by selecting the number: ")
+                    if user_input not in promo_dico:
+                        print("Invalid input.\n")
+                        user_input = input("Please choose the piece you want by selecting the number: ")
+
+                    new_piece = promo_dico[user_input]
                     self._game_board[end_column][end_row] = white_promotion[new_piece]
                     self._game_board[start_column][start_row] = '_'
 
@@ -365,19 +359,15 @@ class ChessVar:
                     self.set_game_state('BLACK_WON')
 
                 print("\nPawn Promotion")
-                for idx, piece in enumerate(promo_list):
-                    print(f"{idx + 1}.{piece}")
-                
-                while valid_input_black is False:
-                    user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
-                    if  (user_input > 3) or (user_input < 0):
-                        print("Invalid input.\n") 
-                        user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
-                    if user_input.isdigit() is False:
-                        print("Invalid input. \n")
-                        user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+                for number, piece in promo_dico.items(): 
+                    print(f"{number}. {piece}")
 
-                if user_input in range(len(promo_list)):
+                while valid_input_black is False:
+                    user_input = input("Please choose the piece you want by selecting the number: ")
+                    if user_input not in promo_dico:
+                        print("Invalid input.\n")
+                        user_input = input("Please choose the piece you want by selecting the number: ")
+                   
                     new_piece = promo_list[user_input]
                     self._game_board[end_column][end_row] = black_promotion[new_piece]
                     self._game_board[start_column][start_row] = '_'
@@ -390,25 +380,20 @@ class ChessVar:
 
                     valid_input_black = False
                     return True
-                   
+          
         else:
             if self.get_move_state() == 'WHITE':
         
-                print("\nPawn Promotion")
-                for idx, piece in enumerate(promo_list):
-                    print(f"{idx + 1}.{piece}")
+                for number, piece in promo_dico.items(): 
+                    print(f"{number}. {piece}")
 
                 while valid_input_white is False:
-                    user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
-                    if  (user_input > 3) or (user_input < 0):
-                        print("Invalid input.\n") 
-                        user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
-                    if user_input.isdigit() is False:
-                        print("Invalid input. \n")
-                        user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+                    user_input = input("Please choose the piece you want by selecting the number: ")
+                    if user_input not in promo_dico:
+                        print("Invalid input.\n")
+                        user_input = input("Please choose the piece you want by selecting the number: ")
 
-                if user_input in range(len(promo_list)):
-                    new_piece = promo_list[user_input]
+                    new_piece = promo_dico[user_input]
                     self._game_board[end_column][end_row] = white_promotion[new_piece]
                     self._game_board[start_column][start_row] = '_'
 
@@ -424,19 +409,15 @@ class ChessVar:
             if self.get_move_state() == 'BLACK':
         
                 print("\nPawn Promotion")
-                for idx, piece in enumerate(promo_list):
-                    print(f"{idx + 1}.{piece}")
-                
-                while valid_input_black is False:
-                    user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
-                    if  (user_input > 3) or (user_input < 0):
-                        print("Invalid input.\n") 
-                        user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
-                    if user_input.isdigit() is False:
-                        print("Invalid input. \n")
-                        user_input = int(input("Please choose the piece you want by selecting the number: ")) - 1
+                for number, piece in promo_dico.items(): 
+                    print(f"{number}. {piece}")
 
-                if user_input in range(len(promo_list)):
+                while valid_input_black is False:
+                    user_input = input("Please choose the piece you want by selecting the number: ")
+                    if user_input not in promo_dico:
+                        print("Invalid input.\n")
+                        user_input = input("Please choose the piece you want by selecting the number: ")
+                   
                     new_piece = promo_list[user_input]
                     self._game_board[end_column][end_row] = black_promotion[new_piece]
                     self._game_board[start_column][start_row] = '_'
@@ -886,6 +867,7 @@ def main():
         ['\u2656', '\u2658', '\u2657', '\u2655', '\u2654', '\u2657', '\u2658', '\u2656']]
 
     cv = ChessVar()
+    #cv.make_move('b7', 'a8')
     cv.print_board()
     cv.play_chess()
 
